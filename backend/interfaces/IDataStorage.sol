@@ -58,7 +58,7 @@ pragma solidity 0.8.29;
         bool visible;
     }
 
-    struct Customers {
+    struct Customer {
         uint created_at;
         uint updated_at;
         string name;
@@ -69,24 +69,61 @@ pragma solidity 0.8.29;
 
     struct Certificate {
         uint creationDate;
+        uint updated_at;
         uint8[] materials;
         uint8[] gemStones;
         uint8 weightInGrams;
         string mainColor; //enum ? 
         CertificateLevel level;
         string JewelerName;
+        //transfers
         CertificateStatus status;
     }
 
 
     /* ::::::::::::::: FUNCTIONS  :::::::::::::::::: */
 
-    function createJeweler(
+    function addJeweler(
         address _jewelerAddress, 
         string calldata _name, 
         string calldata _email,
         string calldata _location,
         bool _available,
         bool _visible
-    ) external;    
+    ) external  returns (bool);    
+
+    function addCustomer(
+        address _customerAddress, 
+        string calldata _name,
+        string calldata _email,
+        bool _visible
+    ) external returns (bool);
+
+    function addCertificate(
+        uint8[] calldata _materials,
+        uint8[] calldata _gemStones,
+        uint8 _weightInGrams,
+        string calldata _mainColor, //enum ? 
+        CertificateLevel _level,
+        string calldata _JewelerName,
+        CertificateStatus _status
+    ) external returns (bool);
+
+    function updateCustomer() external returns (bool);
+
+    function updateJeweler() external returns (bool);
+
+    function updateCertificate() external returns (bool);
+
+    function transertCertificate() external returns (bool);
+
+    function getOneJeweler(address _jewelerAddress) external view returns(Jeweler memory);
+
+    function getOneCustomer(address _customerAddress) external view returns(Customer memory);
+
+    function getCustomerCount() external view returns(uint);
+
+    function getJewelerCount() external view returns(uint);
+
+    function getCertificateCount() external view returns(uint);
 }
