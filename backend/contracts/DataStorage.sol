@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: UNLICENSED
-pragma solidity 0.8.29;
+pragma solidity 0.8.28;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 
@@ -165,11 +165,42 @@ import "@openzeppelin/contracts/access/Ownable.sol";
         return true;
     }
 
-    function updateCustomer() external returns (bool) {
+    function updateCustomer(
+        address _customerAddress, 
+        string calldata _name,
+        string calldata _email,
+        bool _visible
+    ) external returns (bool) {
+        customers[_customerAddress].updated_at = block.timestamp;
+        customers[_customerAddress].name = _name;
+        customers[_customerAddress].email = _email;
+        customers[_customerAddress].visible = _visible;
         return true;
     }
 
-    function updateJeweler() external returns (bool) {
+    function updateJeweler(
+        address _jewelerAddress, 
+        string calldata _name, 
+        string calldata _email,
+        string calldata _location,
+        bool _available,
+        bool _visible
+    ) external returns (bool) {
+        jewelers[_jewelerAddress].updated_at = block.timestamp;
+        jewelers[_jewelerAddress].name = _name;
+        jewelers[_jewelerAddress].email = _email;
+        jewelers[_jewelerAddress].location = _location;
+        jewelers[_jewelerAddress].visible = _visible;
+        return true;
+    }
+
+    function activateJeweler(address _jewelerAddress) external returns (bool) {
+        jewelers[_jewelerAddress].available = true;
+        return true;
+    }
+
+    function desactivateJeweler(address _jewelerAddress) external returns (bool) {
+        jewelers[_jewelerAddress].available = false;
         return true;
     }
 

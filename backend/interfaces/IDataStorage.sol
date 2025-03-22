@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: UNLICENSED
-pragma solidity 0.8.29;
+pragma solidity 0.8.28;
 
 /**
  * @title IDataStorage
@@ -109,9 +109,25 @@ pragma solidity 0.8.29;
         CertificateStatus _status
     ) external returns (bool);
 
-    function updateCustomer() external returns (bool);
+    function updateCustomer(
+        address _customerAddress, 
+        string calldata _name,
+        string calldata _email,
+        bool _visible
+    ) external returns (bool);
 
-    function updateJeweler() external returns (bool);
+    function updateJeweler(
+        address _jewelerAddress, 
+        string calldata _name, 
+        string calldata _email,
+        string calldata _location,
+        bool _available,
+        bool _visible
+    ) external returns (bool);
+
+    function activateJeweler(address _jewelerAddress) external returns (bool);
+
+    function desactivateJeweler(address _jewelerAddress) external returns (bool);
 
     function updateCertificate() external returns (bool);
 

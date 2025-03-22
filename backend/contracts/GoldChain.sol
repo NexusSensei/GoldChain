@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: UNLICENSED
-pragma solidity 0.8.29;
-
-import "../node_modules/@openzeppelin/contracts/access/AccessControl.sol";
+pragma solidity 0.8.28;
+import "@openzeppelin/contracts/access/AccessControl.sol";
 import "../interfaces/IDataStorage.sol";
 
 /**
@@ -17,7 +16,6 @@ contract GoldChain is AccessControl {
     bytes32 public constant CUSTOMERS_ROLE = keccak256("CUSTOMERS_ROLE");
     bytes32 public constant CERTIFICATOR_ROLE = keccak256("CERTIFICATOR_ROLE");
 
-    address public admin;
 
     /* ::::::::::::::: EVENTS :::::::::::::::::: */
     /// @notice Event triggered when a jeweler is created.
@@ -36,8 +34,21 @@ contract GoldChain is AccessControl {
     /// @param certificateId the ID of the certificate
     event certificateCreated(address jewelerAddress, uint timestamp, uint certificateId);
 
+    /// @notice Event triggered when a customer is updated.
+    /// @param customerAddress the customer's address.
+    /// @param timestamp the event datetime.
+    event customerUpdated(address customerAddress, uint timestamp);
+
+    /// @notice Event triggered when a jeweler is updated.
+    /// @param jewelerAddress the jeweler's address.
+    /// @param timestamp the event datetime.
+    event jewelerUpdated(address jewelerAddress, uint timestamp);
+
     /* ::::::::::::::: VARIABLES  :::::::::::::::::: */
     IDataStorage private dataStorage;
+    address public admin;
+    const FALSE = false;
+
 
     /* ::::::::::::::: CONSTRUCTOR :::::::::::::::::: */
     constructor(IDataStorage _dataStorage) {
@@ -53,6 +64,10 @@ contract GoldChain is AccessControl {
     error JewelerIsAlreadyRegistered();
     /// @notice the customer is already registered
     error CustomerIsAlreadyRegistered();
+    /// @notice the customer does not exist
+    error CustomerNotExists();
+    /// @notice the jeweler does not exist
+    error JewelerNotExists();
 
     /* ::::::::::::::: MODIFIERS :::::::::::::::::: */
 
@@ -80,8 +95,6 @@ contract GoldChain is AccessControl {
         string calldata _name, 
         string calldata _email,
         string calldata _location,
-        bool _available,
-        bool _visible
         ) external returns (bool) {
             if (hasRole(JEWELERS_ROLE, msg.sender)) {
                 revert JewelerIsAlreadyRegistered();
@@ -92,8 +105,8 @@ contract GoldChain is AccessControl {
                 _name, 
                 _email, 
                 _location,
-                _available,
-                _visible);
+                FALSE,
+                FALSE);
             emit jewelerCreated(msg.sender, block.timestamp);
         return true;
     }
@@ -119,11 +132,41 @@ contract GoldChain is AccessControl {
         return true;
     }
 
-    function updateCustomer() external returns (bool) {
+    function updateCustomer(
+        string calldata _name,
+        string calldata _email,
+        bool _visible
+    ) external onlyRole(CUSTOMERS_ROLE) returns (bool) {
+        if (dataStorage.getCustomer(msg.sender).created_at == 0) {
+            revert CustomerNotExists();
+        }
+        dataStorage.updateCustomer(
+            msg.sender, 
+            _name, 
+            _email, 
+            _visible
+            );
+        emit customerUpdated(msg.sender, block.timestamp);
         return true;
     }
 
-    function updateJeweler() external returns (bool) {
+    function updateJeweler(
+        string calldata _name, 
+        string calldata _email,
+        string calldata _location,
+        bool _visible
+    ) external onlyRole(JEWELERS_ROLE) returns (bool) {
+        if (dataStorage.getJeweler(msg.sender).created_at == 0) {
+            revert JewelerNotExists();
+        }
+        dataStorage.updateJeweler(
+            msg.sender, 
+            _name, 
+            _email, 
+            _location, 
+            _visible
+            );
+        emit jewelerUpdated(msg.sender, block.timestamp);
         return true;
     }
 
@@ -148,4 +191,17 @@ contract GoldChain is AccessControl {
     function getOneCustomer(address _customerAddress) public view returns(IDataStorage.Customer memory) {
         return dataStorage.getOneCustomer(_customerAddress);
     }
+
+    /* ::::::::::::::: ADMIN FUNCTIONS :::::::::::::::::: */
+
+    function activateJeweler(address _jewelerAddress) external onlyRole(ADMIN) returns (bool) {
+        dataStorage.activateJeweler(_jewelerAddress);
+        return true;
+    }
+
+    function desactivateJeweler(address _jewelerAddress) external onlyRole(ADMIN) returns (bool) {
+        dataStorage.desactivateJeweler(_jewelerAddress);
+        return true;
+    }
+    
 }
