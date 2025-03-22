@@ -183,7 +183,6 @@ import "@openzeppelin/contracts/access/Ownable.sol";
         string calldata _name, 
         string calldata _email,
         string calldata _location,
-        bool _available,
         bool _visible
     ) external returns (bool) {
         jewelers[_jewelerAddress].updated_at = block.timestamp;

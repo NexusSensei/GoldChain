@@ -121,7 +121,6 @@ pragma solidity 0.8.28;
         string calldata _name, 
         string calldata _email,
         string calldata _location,
-        bool _available,
         bool _visible
     ) external returns (bool);
 

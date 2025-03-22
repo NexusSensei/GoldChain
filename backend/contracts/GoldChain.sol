@@ -47,8 +47,8 @@ contract GoldChain is AccessControl {
     /* ::::::::::::::: VARIABLES  :::::::::::::::::: */
     IDataStorage private dataStorage;
     address public admin;
-    const FALSE = false;
-
+    bool public constant FALSE = false;
+    bool public constant TRUE = true;
 
     /* ::::::::::::::: CONSTRUCTOR :::::::::::::::::: */
     constructor(IDataStorage _dataStorage) {
@@ -75,8 +75,7 @@ contract GoldChain is AccessControl {
 
     function createCustomer(
         string calldata _name,
-        string calldata _email,
-        bool _visible
+        string calldata _email
         ) external returns (bool) {
             if (hasRole(CUSTOMERS_ROLE, msg.sender)) {
                 revert CustomerIsAlreadyRegistered();
@@ -86,7 +85,7 @@ contract GoldChain is AccessControl {
                 msg.sender, 
                 _name, 
                 _email, 
-                _visible);
+                TRUE);
             emit customerCreated(msg.sender, block.timestamp);
         return true;
     }
@@ -94,7 +93,7 @@ contract GoldChain is AccessControl {
     function createJeweler(
         string calldata _name, 
         string calldata _email,
-        string calldata _location,
+        string calldata _location
         ) external returns (bool) {
             if (hasRole(JEWELERS_ROLE, msg.sender)) {
                 revert JewelerIsAlreadyRegistered();
@@ -106,7 +105,7 @@ contract GoldChain is AccessControl {
                 _email, 
                 _location,
                 FALSE,
-                FALSE);
+                TRUE);
             emit jewelerCreated(msg.sender, block.timestamp);
         return true;
     }
@@ -137,7 +136,7 @@ contract GoldChain is AccessControl {
         string calldata _email,
         bool _visible
     ) external onlyRole(CUSTOMERS_ROLE) returns (bool) {
-        if (dataStorage.getCustomer(msg.sender).created_at == 0) {
+        if (dataStorage.getOneCustomer(msg.sender).created_at == 0) {
             revert CustomerNotExists();
         }
         dataStorage.updateCustomer(
@@ -156,7 +155,7 @@ contract GoldChain is AccessControl {
         string calldata _location,
         bool _visible
     ) external onlyRole(JEWELERS_ROLE) returns (bool) {
-        if (dataStorage.getJeweler(msg.sender).created_at == 0) {
+        if (dataStorage.getOneJeweler(msg.sender).created_at == 0) {
             revert JewelerNotExists();
         }
         dataStorage.updateJeweler(
@@ -202,6 +201,14 @@ contract GoldChain is AccessControl {
     function desactivateJeweler(address _jewelerAddress) external onlyRole(ADMIN) returns (bool) {
         dataStorage.desactivateJeweler(_jewelerAddress);
         return true;
+    }
+
+    function getJewelerCount() external view returns (uint) {
+        return dataStorage.getJewelerCount();
+    }
+
+    function getCustomerCount() external view returns (uint) {
+        return dataStorage.getCustomerCount();
     }
     
 }
