@@ -105,40 +105,46 @@ describe("testing GoldChain", function () {
     
   });
 
-  describe("update jeweler name", function () {
-    it("should add a jeweler", async function () {
+  describe("update jeweler", function () {
+    it("should update a jeweler name", async function () {
       const { goldChain, jeweler1 } = await loadFixture(deployGoldChainFixture);
       await goldChain.connect(jeweler1).createJeweler(JEWELER1NAME, JEWELER1EMAIL, JEWELER1LOCATION);
       await goldChain.connect(jeweler1).updateJeweler(JEWELER2NAME, JEWELER1EMAIL, JEWELER1LOCATION, VISIBLE);
+      let jew = await goldChain.getOneJeweler(jeweler1.address);
       expect(jew.name).to.equal(JEWELER2NAME);
     });
 
-    it("should add a jeweler with correct email", async function () {
+    it("should update a jeweler email", async function () {
       const { goldChain, jeweler1 } = await loadFixture(deployGoldChainFixture);
       await goldChain.connect(jeweler1).createJeweler(JEWELER1NAME, JEWELER1EMAIL, JEWELER1LOCATION);
+      await goldChain.connect(jeweler1).updateJeweler(JEWELER1NAME, JEWELER2EMAIL, JEWELER1LOCATION, VISIBLE);
       let jew = await goldChain.getOneJeweler(jeweler1.address);
-      expect(jew.email).to.equal(JEWELER1EMAIL);
+      expect(jew.email).to.equal(JEWELER2EMAIL);
     });
 
-    it("should add a jeweler with correct location", async function () {
+    it("should update a jeweler location", async function () {
       const { goldChain, jeweler1 } = await loadFixture(deployGoldChainFixture);
       await goldChain.connect(jeweler1).createJeweler(JEWELER1NAME, JEWELER1EMAIL, JEWELER1LOCATION);
+      await goldChain.connect(jeweler1).updateJeweler(JEWELER1NAME, JEWELER1EMAIL, JEWELER2LOCATION, VISIBLE);
       let jew = await goldChain.getOneJeweler(jeweler1.address);
-      expect(jew.location).to.equal(JEWELER1LOCATION);
+      expect(jew.location).to.equal(JEWELER2LOCATION);
     });
 
-    it("should add a jeweler with correct visible status", async function () {
+    it("should update a jeweler visibility", async function () {
       const { goldChain, jeweler1 } = await loadFixture(deployGoldChainFixture);
       await goldChain.connect(jeweler1).createJeweler(JEWELER1NAME, JEWELER1EMAIL, JEWELER1LOCATION);
+      await goldChain.connect(jeweler1).updateJeweler(JEWELER1NAME, JEWELER1EMAIL, JEWELER1LOCATION, NOT_VISIBLE);
       let jew = await goldChain.getOneJeweler(jeweler1.address);
-      expect(jew.visible).to.equal(VISIBLE);
+      expect(jew.visible).to.equal(false);
     });
 
-    it("should a new jeweler is NOT_AVAIBLE", async function () {
-      const { goldChain, jeweler1 } = await loadFixture(deployGoldChainFixture);
-      await goldChain.connect(jeweler1).createJeweler(JEWELER1NAME, JEWELER1EMAIL, JEWELER1LOCATION);
-      let jew = await goldChain.getOneJeweler(jeweler1.address);
-      expect(jew.available).to.equal(NOT_AVAILABLE);
+    it("should emit jewelerUpdated event", async function () {
+      const { goldChain, jeweler1 } = await loadFixture(deployGoldChainFixture); 
+      await goldChain.connect(jeweler1).createJeweler(JEWELER1NAME, JEWELER1EMAIL, JEWELER1LOCATION);     
+      await expect(goldChain.connect(jeweler1).updateJeweler(JEWELER2NAME, JEWELER2EMAIL, JEWELER2LOCATION, VISIBLE))
+      .to.emit(goldChain,
+        "jewelerUpdated"
+        ).withArgs(jeweler1.address, anyValue); 
     });
     
   });
@@ -170,6 +176,100 @@ describe("testing GoldChain", function () {
       await goldChain.connect(customer1).createCustomer(CUSTOMER1NAME, CUSTOMER1EMAIL);
       let cust = await goldChain.getOneCustomer(customer1.address);
       expect(cust.visible).to.equal(VISIBLE);
+    });
+
+  });
+
+  describe("update customer", function () {
+    it("should update a customer name", async function () {
+      const { goldChain, customer1 } = await loadFixture(deployGoldChainFixture);
+      await goldChain.connect(customer1).createCustomer(CUSTOMER1NAME, CUSTOMER1EMAIL);
+      await goldChain.connect(customer1).updateCustomer(CUSTOMER2NAME, CUSTOMER1EMAIL, VISIBLE);
+      let cust = await goldChain.getOneCustomer(customer1.address);
+      expect(cust.name).to.equal(CUSTOMER2NAME);
+    });
+
+    it("should update a customer email", async function () {
+      const { goldChain, customer1 } = await loadFixture(deployGoldChainFixture);
+      await goldChain.connect(customer1).createCustomer(CUSTOMER1NAME, CUSTOMER1EMAIL);
+      await goldChain.connect(customer1).updateCustomer(CUSTOMER1NAME, CUSTOMER2EMAIL, VISIBLE);
+      let cust = await goldChain.getOneCustomer(customer1.address);
+      expect(cust.email).to.equal(CUSTOMER2EMAIL);
+    });
+
+    it("should update a customer visibility", async function () {
+      const { goldChain, customer1 } = await loadFixture(deployGoldChainFixture);
+      await goldChain.connect(customer1).createCustomer(CUSTOMER1NAME, CUSTOMER1EMAIL);
+      await goldChain.connect(customer1).updateCustomer(CUSTOMER1NAME, CUSTOMER1EMAIL, NOT_VISIBLE);
+      let cust = await goldChain.getOneCustomer(customer1.address);
+      expect(cust.visible).to.equal(false);
+    });
+
+    it("should emit customerUpdated event", async function () {
+      const { goldChain, customer1 } = await loadFixture(deployGoldChainFixture);
+      await goldChain.connect(customer1).createCustomer(CUSTOMER1NAME, CUSTOMER1EMAIL);
+      await expect(goldChain.connect(customer1).updateCustomer(CUSTOMER2NAME, CUSTOMER2EMAIL, VISIBLE))
+      .to.emit(goldChain,
+        "customerUpdated"
+        ).withArgs(customer1.address, anyValue); 
+    });
+  });
+
+  describe("ADMIN functions", function () {
+    it("should activate a jeweler", async function () {
+      const { goldChain, admin, jeweler1 } = await loadFixture(deployGoldChainFixture);
+      await goldChain.connect(jeweler1).createJeweler(JEWELER1NAME, JEWELER1EMAIL, JEWELER1LOCATION);
+      await goldChain.connect(admin).activateJeweler(jeweler1.address);
+      let jew = await goldChain.getOneJeweler(jeweler1.address);
+      expect(jew.available).to.equal(AVAILABLE);
+    });
+
+    it("should desactivate a jeweler", async function () {
+      const { goldChain, admin, jeweler1 } = await loadFixture(deployGoldChainFixture);
+      await goldChain.connect(jeweler1).createJeweler(JEWELER1NAME, JEWELER1EMAIL, JEWELER1LOCATION);
+      await goldChain.connect(admin).activateJeweler(jeweler1.address);
+      await goldChain.connect(admin).desactivateJeweler(jeweler1.address);
+      let jew = await goldChain.getOneJeweler(jeweler1.address);
+      expect(jew.available).to.equal(NOT_AVAILABLE);
+    });
+
+    it("should emit jewelerActivated event", async function () {
+      const { goldChain, admin, jeweler1 } = await loadFixture(deployGoldChainFixture);
+      await goldChain.connect(jeweler1).createJeweler(JEWELER1NAME, JEWELER1EMAIL, JEWELER1LOCATION);
+      await expect(goldChain.connect(admin).activateJeweler(jeweler1.address))
+      .to.emit(goldChain,
+        "jewelerActivated"
+        ).withArgs(jeweler1.address, anyValue); 
+    }); 
+
+    it("should emit jewelerDesactivated event", async function () {
+      const { goldChain, admin, jeweler1 } = await loadFixture(deployGoldChainFixture);
+      await goldChain.connect(jeweler1).createJeweler(JEWELER1NAME, JEWELER1EMAIL, JEWELER1LOCATION);
+      await goldChain.connect(admin).activateJeweler(jeweler1.address);
+      await expect(goldChain.connect(admin).desactivateJeweler(jeweler1.address))
+      .to.emit(goldChain,
+        "jewelerDesactivated"
+        ).withArgs(jeweler1.address, anyValue); 
+    });
+
+    it("should not activate a jeweler if not admin", async function () {
+      const { goldChain, jeweler1 } = await loadFixture(deployGoldChainFixture);
+      await goldChain.connect(jeweler1).createJeweler(JEWELER1NAME, JEWELER1EMAIL, JEWELER1LOCATION);
+      await expect(goldChain.connect(jeweler1).activateJeweler(jeweler1.address)).to.be.revertedWithCustomError(
+        goldChain,
+        "AccessControlUnauthorizedAccount").withArgs(
+          jeweler1.address, anyValue
+        );
+    });
+
+    it("should not desactivate a jeweler if not admin", async function () {
+      const { goldChain, jeweler1 } = await loadFixture(deployGoldChainFixture);
+      await goldChain.connect(jeweler1).createJeweler(JEWELER1NAME, JEWELER1EMAIL, JEWELER1LOCATION);
+      await expect(goldChain.connect(jeweler1).desactivateJeweler(jeweler1.address)).to.be.revertedWithCustomError(
+        goldChain,  
+        "AccessControlUnauthorizedAccount").withArgs(
+          jeweler1.address, anyValue
+        );
     });
 
   });

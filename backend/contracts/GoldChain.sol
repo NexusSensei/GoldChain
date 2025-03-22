@@ -44,6 +44,16 @@ contract GoldChain is AccessControl {
     /// @param timestamp the event datetime.
     event jewelerUpdated(address jewelerAddress, uint timestamp);
 
+    /// @notice Event triggered when a jeweler is activated.
+    /// @param jewelerAddress the jeweler's address.
+    /// @param timestamp the event datetime.
+    event jewelerActivated(address jewelerAddress, uint timestamp);
+
+    /// @notice Event triggered when a jeweler is desactivated.
+    /// @param jewelerAddress the jeweler's address.
+    /// @param timestamp the event datetime.
+    event jewelerDesactivated(address jewelerAddress, uint timestamp);
+
     /* ::::::::::::::: VARIABLES  :::::::::::::::::: */
     IDataStorage private dataStorage;
     address public admin;
@@ -195,11 +205,13 @@ contract GoldChain is AccessControl {
 
     function activateJeweler(address _jewelerAddress) external onlyRole(ADMIN) returns (bool) {
         dataStorage.activateJeweler(_jewelerAddress);
+        emit jewelerActivated(_jewelerAddress, block.timestamp);
         return true;
     }
 
     function desactivateJeweler(address _jewelerAddress) external onlyRole(ADMIN) returns (bool) {
         dataStorage.desactivateJeweler(_jewelerAddress);
+        emit jewelerDesactivated(_jewelerAddress, block.timestamp);
         return true;
     }
 
