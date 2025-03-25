@@ -3,16 +3,12 @@
 
 const { buildModule } = require("@nomicfoundation/hardhat-ignition/modules");
 
-const JAN_1ST_2030 = 1893456000;
-const ONE_GWEI = 1_000_000_000n;
+const dataAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
 
-module.exports = buildModule("LockModule", (m) => {
-  const unlockTime = m.getParameter("unlockTime", JAN_1ST_2030);
-  const lockedAmount = m.getParameter("lockedAmount", ONE_GWEI);
+module.exports = buildModule("GoldChain", (m) => {
+  const dataAddressparam = m.getParameter("dataAddress", dataAddress);
 
-  const lock = m.contract("Lock", [unlockTime], {
-    value: lockedAmount,
-  });
+  const goldChain = m.contract("GoldChain", [dataAddressparam]);
 
-  return { lock };
+  return { goldChain };
 });
