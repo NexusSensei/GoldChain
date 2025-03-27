@@ -1,10 +1,7 @@
 'use client'
 import { createContext, useState, useEffect, useContext } from 'react'
-//import { readContract } from '@wagmi'
-//import { publicClient } from "@/utils"
 import { CONTRACT_ADDRESS, CONTRACT_ABI } from "@/constants"
 import { useAccount } from "wagmi"
-//import { useReadContract, useAccount, useWriteContract, useWaitForTransactionReceipt } from "wagmi";
 import { publicClient } from "@/utils/client";
 
 

@@ -1,10 +1,10 @@
 'use client'
-import Blank from "@/components/profile/add"
+import Blank from "@/components/profile/AddProfile"
 import { useUserProfile } from "@/components/contexts/userContext"
 import { useAccount } from "wagmi"
 import NotConnected from "@/components/shared/NotConnected"
-import AddProfile from "@/components/profile/add"
-
+import AddProfile from "@/components/profile/AddProfile"
+import Customer from "@/components/profile/customer"
 
 const MyProfile = () => {
     const { userProfile } = useUserProfile();
@@ -16,7 +16,7 @@ const MyProfile = () => {
         <div>Mon adresse : {userAddress}</div>
         <div>Mon profil {userProfile}
           {userProfile == "unknown" && <AddProfile />}
-          {userProfile == "customer" && <div>Customer</div>}
+          {userProfile == "customer" && <Customer />}
           {userProfile == "jeweler" && <div>Jeweler</div>}
           {userProfile == "admin" && <div>Admin</div>}
         </div>
