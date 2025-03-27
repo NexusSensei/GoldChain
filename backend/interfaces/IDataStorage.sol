@@ -63,6 +63,7 @@ pragma solidity 0.8.28;
         uint updated_at;
         string name;
         string email;
+        string location;
         bool visible;
         uint[] OwnedCertificateIds; 
     }
@@ -96,6 +97,7 @@ pragma solidity 0.8.28;
         address _customerAddress, 
         string calldata _name,
         string calldata _email,
+        string calldata _location,
         bool _visible
     ) external returns (bool);
 
@@ -113,6 +115,7 @@ pragma solidity 0.8.28;
         address _customerAddress, 
         string calldata _name,
         string calldata _email,
+        string calldata _location,
         bool _visible
     ) external returns (bool);
 

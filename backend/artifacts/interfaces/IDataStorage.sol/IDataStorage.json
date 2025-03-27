@@ -89,6 +89,11 @@
           "type": "string"
         },
         {
+          "internalType": "string",
+          "name": "_location",
+          "type": "string"
+        },
+        {
           "internalType": "bool",
           "name": "_visible",
           "type": "bool"
@@ -240,6 +245,11 @@
               "type": "string"
             },
             {
+              "internalType": "string",
+              "name": "location",
+              "type": "string"
+            },
+            {
               "internalType": "bool",
               "name": "visible",
               "type": "bool"
@@ -360,6 +370,11 @@
         {
           "internalType": "string",
           "name": "_email",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "_location",
           "type": "string"
         },
         {

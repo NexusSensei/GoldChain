@@ -20,8 +20,10 @@ describe("testing GoldChain", function () {
   const JEWELER2LOCATION = "Marseille";
   const CUSTOMER1NAME = "Customer 1";
   const CUSTOMER1EMAIL = "customer1@gmail.com";
+  const CUSTOMER1LOCATION = "Lyon";
   const CUSTOMER2NAME = "Customer 2";
   const CUSTOMER2EMAIL = "customer2@gmail.com";
+  const CUSTOMER2LOCATION = "Nice";
 
   async function deployGoldChainFixture() {
     const [admin, jeweler1, jeweler2, customer1, customer2, otherPerson] = await ethers.getSigners();
@@ -153,27 +155,34 @@ describe("testing GoldChain", function () {
   describe("add customer", function () {
     it("should add a customer", async function () {
       const { goldChain, customer1 } = await loadFixture(deployGoldChainFixture);
-      await goldChain.connect(customer1).createCustomer(CUSTOMER1NAME, CUSTOMER1EMAIL);
+      await goldChain.connect(customer1).createCustomer(CUSTOMER1NAME, CUSTOMER1EMAIL, CUSTOMER1LOCATION);
       expect(await goldChain.getCustomerCount()).to.equal(1);
     });
 
     it("should add a customer with correct name", async function () {
       const { goldChain, customer1 } = await loadFixture(deployGoldChainFixture);
-      await goldChain.connect(customer1).createCustomer(CUSTOMER1NAME, CUSTOMER1EMAIL);
+      await goldChain.connect(customer1).createCustomer(CUSTOMER1NAME, CUSTOMER1EMAIL, CUSTOMER1LOCATION);
       let cust = await goldChain.getOneCustomer(customer1.address);
       expect(cust.name).to.equal(CUSTOMER1NAME);
     });
 
     it("should add a customer with correct email", async function () {
       const { goldChain, customer1 } = await loadFixture(deployGoldChainFixture);
-      await goldChain.connect(customer1).createCustomer(CUSTOMER1NAME, CUSTOMER1EMAIL);
+      await goldChain.connect(customer1).createCustomer(CUSTOMER1NAME, CUSTOMER1EMAIL, CUSTOMER1LOCATION);
       let cust = await goldChain.getOneCustomer(customer1.address);
       expect(cust.email).to.equal(CUSTOMER1EMAIL);
     });
 
+    it("should add a customer with correct location", async function () {
+      const { goldChain, customer1 } = await loadFixture(deployGoldChainFixture);
+      await goldChain.connect(customer1).createCustomer(CUSTOMER1NAME, CUSTOMER1EMAIL, CUSTOMER1LOCATION);
+      let cust = await goldChain.getOneCustomer(customer1.address);
+      expect(cust.location).to.equal(CUSTOMER1LOCATION);
+    });
+
     it("should add a customer with correct visible status", async function () {
       const { goldChain, customer1 } = await loadFixture(deployGoldChainFixture);
-      await goldChain.connect(customer1).createCustomer(CUSTOMER1NAME, CUSTOMER1EMAIL);
+      await goldChain.connect(customer1).createCustomer(CUSTOMER1NAME, CUSTOMER1EMAIL, CUSTOMER1LOCATION);
       let cust = await goldChain.getOneCustomer(customer1.address);
       expect(cust.visible).to.equal(VISIBLE);
     });
@@ -183,32 +192,32 @@ describe("testing GoldChain", function () {
   describe("update customer", function () {
     it("should update a customer name", async function () {
       const { goldChain, customer1 } = await loadFixture(deployGoldChainFixture);
-      await goldChain.connect(customer1).createCustomer(CUSTOMER1NAME, CUSTOMER1EMAIL);
-      await goldChain.connect(customer1).updateCustomer(CUSTOMER2NAME, CUSTOMER1EMAIL, VISIBLE);
+      await goldChain.connect(customer1).createCustomer(CUSTOMER1NAME, CUSTOMER1EMAIL, CUSTOMER1LOCATION);
+      await goldChain.connect(customer1).updateCustomer(CUSTOMER2NAME, CUSTOMER1EMAIL, CUSTOMER1LOCATION, VISIBLE);
       let cust = await goldChain.getOneCustomer(customer1.address);
       expect(cust.name).to.equal(CUSTOMER2NAME);
     });
 
     it("should update a customer email", async function () {
       const { goldChain, customer1 } = await loadFixture(deployGoldChainFixture);
-      await goldChain.connect(customer1).createCustomer(CUSTOMER1NAME, CUSTOMER1EMAIL);
-      await goldChain.connect(customer1).updateCustomer(CUSTOMER1NAME, CUSTOMER2EMAIL, VISIBLE);
+      await goldChain.connect(customer1).createCustomer(CUSTOMER1NAME, CUSTOMER1EMAIL, CUSTOMER1LOCATION);
+      await goldChain.connect(customer1).updateCustomer(CUSTOMER1NAME, CUSTOMER2EMAIL, CUSTOMER1LOCATION, VISIBLE);
       let cust = await goldChain.getOneCustomer(customer1.address);
       expect(cust.email).to.equal(CUSTOMER2EMAIL);
     });
 
     it("should update a customer visibility", async function () {
       const { goldChain, customer1 } = await loadFixture(deployGoldChainFixture);
-      await goldChain.connect(customer1).createCustomer(CUSTOMER1NAME, CUSTOMER1EMAIL);
-      await goldChain.connect(customer1).updateCustomer(CUSTOMER1NAME, CUSTOMER1EMAIL, NOT_VISIBLE);
+      await goldChain.connect(customer1).createCustomer(CUSTOMER1NAME, CUSTOMER1EMAIL, CUSTOMER1LOCATION);
+      await goldChain.connect(customer1).updateCustomer(CUSTOMER1NAME, CUSTOMER1EMAIL, CUSTOMER1LOCATION, NOT_VISIBLE);
       let cust = await goldChain.getOneCustomer(customer1.address);
       expect(cust.visible).to.equal(false);
     });
 
     it("should emit customerUpdated event", async function () {
       const { goldChain, customer1 } = await loadFixture(deployGoldChainFixture);
-      await goldChain.connect(customer1).createCustomer(CUSTOMER1NAME, CUSTOMER1EMAIL);
-      await expect(goldChain.connect(customer1).updateCustomer(CUSTOMER2NAME, CUSTOMER2EMAIL, VISIBLE))
+      await goldChain.connect(customer1).createCustomer(CUSTOMER1NAME, CUSTOMER1EMAIL, CUSTOMER1LOCATION);
+      await expect(goldChain.connect(customer1).updateCustomer(CUSTOMER2NAME, CUSTOMER2EMAIL, CUSTOMER2LOCATION, VISIBLE))
       .to.emit(goldChain,
         "customerUpdated"
         ).withArgs(customer1.address, anyValue); 

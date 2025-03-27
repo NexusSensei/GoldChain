@@ -20,9 +20,10 @@ const {
     const JEWELER2LOCATION = "Marseille";
     const CUSTOMER1NAME = "Customer 1";
     const CUSTOMER1EMAIL = "customer1@gmail.com";
+    const CUSTOMER1LOCATION = "Lyon";
     const CUSTOMER2NAME = "Customer 2";
     const CUSTOMER2EMAIL = "customer2@gmail.com";
-    
+    const CUSTOMER2LOCATION = "Nice";
     
   
     before(async function () {
@@ -110,18 +111,18 @@ const {
     //test de l'ajout d'un customer
     describe("Add Customer", function () {
       it("should add a customer", async function () {
-        await dataStorage.connect(admin).addCustomer(customer1.address, CUSTOMER1NAME, CUSTOMER1EMAIL, NOT_VISIBLE);
+        await dataStorage.connect(admin).addCustomer(customer1.address, CUSTOMER1NAME, CUSTOMER1EMAIL, CUSTOMER1LOCATION, NOT_VISIBLE);
         expect(await dataStorage.getCustomerCount()).to.equal(1);        
       });
 
       it("should add a two customers", async function () {
-        await dataStorage.connect(admin).addCustomer(customer1.address, CUSTOMER1NAME, CUSTOMER1EMAIL, NOT_VISIBLE);
-        await dataStorage.connect(admin).addCustomer(customer2.address, CUSTOMER2NAME, CUSTOMER2EMAIL, NOT_VISIBLE);
+        await dataStorage.connect(admin).addCustomer(customer1.address, CUSTOMER1NAME, CUSTOMER1EMAIL, CUSTOMER1LOCATION, NOT_VISIBLE);
+        await dataStorage.connect(admin).addCustomer(customer2.address, CUSTOMER2NAME, CUSTOMER2EMAIL, CUSTOMER2LOCATION, NOT_VISIBLE);
         expect(await dataStorage.getCustomerCount()).to.equal(2);        
       });
 
       it("should add a customer with correct name", async function () {
-        await dataStorage.connect(admin).addCustomer(customer1.address, CUSTOMER1NAME, CUSTOMER1EMAIL, NOT_VISIBLE);
+        await dataStorage.connect(admin).addCustomer(customer1.address, CUSTOMER1NAME, CUSTOMER1EMAIL, CUSTOMER1LOCATION, NOT_VISIBLE);
         let cus = await dataStorage.getOneCustomer(customer1.address);
         // console.log("name = " + cus.name.toString());
         // console.log("email = " + cus.email.toString());
@@ -129,11 +130,16 @@ const {
       });
 
       it("should add a customer with correct email", async function () {
-        await dataStorage.connect(admin).addCustomer(customer1.address, CUSTOMER1NAME, CUSTOMER1EMAIL, NOT_VISIBLE);
+        await dataStorage.connect(admin).addCustomer(customer1.address, CUSTOMER1NAME, CUSTOMER1EMAIL, CUSTOMER1LOCATION, NOT_VISIBLE);
         let cus = await dataStorage.getOneCustomer(customer1.address);
         expect(cus.email.toString()).to.equal(CUSTOMER1EMAIL);        
       }); 
 
+      it("should add a customer with correct location", async function () {
+        await dataStorage.connect(admin).addCustomer(customer1.address, CUSTOMER1NAME, CUSTOMER1EMAIL, CUSTOMER1LOCATION, NOT_VISIBLE);
+        let cus = await dataStorage.getOneCustomer(customer1.address);
+        expect(cus.location.toString()).to.equal(CUSTOMER1LOCATION);        
+      });
 
     });
 

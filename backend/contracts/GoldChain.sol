@@ -85,7 +85,8 @@ contract GoldChain is AccessControl {
 
     function createCustomer(
         string calldata _name,
-        string calldata _email
+        string calldata _email,
+        string calldata _location
         ) external returns (bool) {
             if (hasRole(CUSTOMERS_ROLE, msg.sender)) {
                 revert CustomerIsAlreadyRegistered();
@@ -95,6 +96,7 @@ contract GoldChain is AccessControl {
                 msg.sender, 
                 _name, 
                 _email, 
+                _location,
                 TRUE);
             emit customerCreated(msg.sender, block.timestamp);
         return true;
@@ -144,6 +146,7 @@ contract GoldChain is AccessControl {
     function updateCustomer(
         string calldata _name,
         string calldata _email,
+        string calldata _location,
         bool _visible
     ) external onlyRole(CUSTOMERS_ROLE) returns (bool) {
         if (dataStorage.getOneCustomer(msg.sender).created_at == 0) {
@@ -153,6 +156,7 @@ contract GoldChain is AccessControl {
             msg.sender, 
             _name, 
             _email, 
+            _location,
             _visible
             );
         emit customerUpdated(msg.sender, block.timestamp);

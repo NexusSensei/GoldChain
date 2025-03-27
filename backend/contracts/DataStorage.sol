@@ -65,6 +65,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
         uint updated_at;
         string name;
         string email;
+        string location;
         bool visible;
         uint[] OwnedCertificateIds; 
     }
@@ -126,6 +127,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
         address _customerAddress, 
         string calldata _name,
         string calldata _email,
+        string calldata _location,
         bool _visible
     ) external returns (bool) {
         customers[_customerAddress] = Customer(
@@ -133,6 +135,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
             block.timestamp,  
             _name,
             _email,
+            _location,
             _visible,
             new uint[](0)            
         );
@@ -169,11 +172,13 @@ import "@openzeppelin/contracts/access/Ownable.sol";
         address _customerAddress, 
         string calldata _name,
         string calldata _email,
+        string calldata _location,
         bool _visible
     ) external returns (bool) {
         customers[_customerAddress].updated_at = block.timestamp;
         customers[_customerAddress].name = _name;
         customers[_customerAddress].email = _email;
+        customers[_customerAddress].location = _location;
         customers[_customerAddress].visible = _visible;
         return true;
     }

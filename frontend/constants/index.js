@@ -449,6 +449,11 @@ export const CONTRACT_ABI=[
         "internalType": "string",
         "name": "_email",
         "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "_location",
+        "type": "string"
       }
     ],
     "name": "createCustomer",
@@ -566,6 +571,11 @@ export const CONTRACT_ABI=[
           {
             "internalType": "string",
             "name": "email",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "location",
             "type": "string"
           },
           {
@@ -800,6 +810,11 @@ export const CONTRACT_ABI=[
       {
         "internalType": "string",
         "name": "_email",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "_location",
         "type": "string"
       },
       {
