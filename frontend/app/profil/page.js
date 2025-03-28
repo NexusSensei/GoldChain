@@ -6,7 +6,7 @@ import NotConnected from "@/components/shared/NotConnected"
 import AddProfile from "@/components/profile/AddProfile"
 import Customer from "@/components/profile/customer"
 import Jeweler from "@/components/profile/jeweler"
-
+import Admin from "@/components/profile/Admin"
 
 const MyProfile = () => {
     const { userProfile } = useUserProfile();
@@ -20,7 +20,7 @@ const MyProfile = () => {
           {userProfile == "unknown" && <AddProfile />}
           {userProfile == "customer" && <Customer />}
           {userProfile == "jeweler" && <Jeweler />}
-          {userProfile == "admin" && <div>Admin</div>}
+          {userProfile == "admin" && <Admin />}
         </div>
       </div>
       ) : (
