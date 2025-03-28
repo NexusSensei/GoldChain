@@ -57,7 +57,7 @@ const Customer = () => {
                 address: CONTRACT_ADDRESS,
                 abi: CONTRACT_ABI,
                 functionName: "updateCustomer",
-                args: [customerName, customerEmail, customerLocation],
+                args: [customerName, customerEmail, customerLocation, true],
                 account: address
             });
         } catch (error) {
@@ -77,11 +77,12 @@ const Customer = () => {
 
     return (
         <div className="flex justify-center items-center min-h-[80vh] p-4">
-            <Card>
+            <Card className="w-[600px]">
                 <CardHeader>
                     <CardTitle>Votre profil Client</CardTitle>
                     <CardDescription>
                         Mettre à jour vos informations
+                        {console.log(customer)}
                     </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-2">              

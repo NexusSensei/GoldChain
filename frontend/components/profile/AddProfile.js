@@ -25,6 +25,7 @@ import { CONTRACT_ADDRESS, CONTRACT_ABI } from "@/constants"
 
 import { error, useReadContract, useAccount, useWriteContract, useWaitForTransactionReceipt } from "wagmi";
 import { useUserProfile } from "@/components/contexts/userContext"
+import { useCustomer } from "@/components/contexts/customerContext"
 
 const AddProfile = () => {
   const { address, isConnected } = useAccount();
@@ -37,6 +38,7 @@ const AddProfile = () => {
   const [jewelerLocation, setJewelerLocation] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   // const [error, setError] = useState(null);
+  const {getCustomer} = useCustomer();
 
   const { data: hash, error, isPending, writeContract } = useWriteContract()
   
@@ -117,7 +119,7 @@ const AddProfile = () => {
               <Button disabled={isPending} onClick={handleAddClient}> {isPending ? 'En cours de création...' : 'Créer profil client'}</Button>
               {hash && <div>Transaction Hash: {hash}</div>}
               {isConfirming && <div>Waiting for confirmation...</div>}
-              {isConfirmed && <div>Transaction confirmed. { getUserProfile() }</div>  }
+              {isConfirmed && <div>Transaction confirmed. { getUserProfile()  }</div>  }
               {error && (
                   <div>Error: {error.shortMessage || error.message}</div>
               )}
@@ -150,7 +152,7 @@ const AddProfile = () => {
               <Button disabled={isPending} onClick={handleAddJeweler}> {isPending ? 'En cours de création...' : 'Créer profil bijoutier'}</Button>
               {hash && <div>Transaction Hash: {hash}</div>}
               {isConfirming && <div>Waiting for confirmation...</div>}
-              {isConfirmed && <div>Transaction confirmed. { getUserProfile() }</div>  }
+              {isConfirmed && <div>Transaction confirmed. { getCustomer() && getUserProfile()  }</div>  }
               {error && (
                   <div>Error: {error.shortMessage || error.message}</div>
               )}
