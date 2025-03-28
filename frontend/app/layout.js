@@ -5,6 +5,7 @@ import '@rainbow-me/rainbowkit/styles.css';
 import { Providers } from './providers';
 import { UserProvider } from "@/components/contexts/userContext";
 import { CustomerProvider } from "@/components/contexts/customerContext";
+import { JewelerProvider } from "@/components/contexts/jewelerContext";
 import { useUserProfile } from "@/components/contexts/userContext";
 import { useContext } from "react";
 
@@ -34,9 +35,11 @@ export default function RootLayout({ children }) {
       >
         <Providers>
           <UserProvider>
-            <CustomerProvider>
-              <Layout>{children}</Layout>
-            </CustomerProvider>
+            <JewelerProvider>
+              <CustomerProvider>
+                <Layout>{children}</Layout>
+              </CustomerProvider>
+            </JewelerProvider>            
           </UserProvider>          
         </Providers>
       </body>

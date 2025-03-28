@@ -5,6 +5,8 @@ import { useAccount } from "wagmi"
 import NotConnected from "@/components/shared/NotConnected"
 import AddProfile from "@/components/profile/AddProfile"
 import Customer from "@/components/profile/customer"
+import Jeweler from "@/components/profile/jeweler"
+
 
 const MyProfile = () => {
     const { userProfile } = useUserProfile();
@@ -17,7 +19,7 @@ const MyProfile = () => {
         <div>Mon profil {userProfile}
           {userProfile == "unknown" && <AddProfile />}
           {userProfile == "customer" && <Customer />}
-          {userProfile == "jeweler" && <div>Jeweler</div>}
+          {userProfile == "jeweler" && <Jeweler />}
           {userProfile == "admin" && <div>Admin</div>}
         </div>
       </div>
