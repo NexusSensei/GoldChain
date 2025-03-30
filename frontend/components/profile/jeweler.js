@@ -26,6 +26,8 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { ComboboxMaterials } from "@/components/shared/MaterialsComboBox"
 import { ComboboxGemsStones } from "@/components/shared/GemsStonesComboBox"
 import { ComboboxCertificateLevel } from "@/components/shared/CertificateLevelCombobox"
+import { EnumConverter } from "@/utils/enumConverter";
+import { formatEVMDate } from "@/utils/dateUtils";
 
 const Jeweler = () => {
     const { jeweler, isLoading, error, getJeweler } = useJeweler();
@@ -87,6 +89,9 @@ const Jeweler = () => {
 
     useEffect(() => {
         if (certificateDetails) {
+            console.log('Certificate Details:', certificateDetails);
+            console.log('Timestamp:', certificateDetails.timestamp);
+            console.log('Timestamp type:', typeof certificateDetails.timestamp);
             setFirstCertificate(certificateDetails);
         }
     }, [certificateDetails]);
@@ -312,13 +317,45 @@ const Jeweler = () => {
                             </div>
                         )}
                         {certificateCount > 0 && firstCertificate && (
-                            <div className="space-y-2">
-                                <div>ID du certificat: {firstCertificateData?.toString()}</div>
-                                <div>Matériau: {firstCertificate.material}</div>
-                                <div>Pierre précieuse: {firstCertificate.gemstone}</div>
-                                <div>Poids: {firstCertificate.weightInGrams} grammes</div>
-                                <div>Couleur: {firstCertificate.color}</div>
-                                <div>Niveau: {firstCertificate.certificateLevel}</div>
+                            <div className="border-2 border-[#d4af37] rounded-lg p-8 bg-white shadow-lg">
+                                <div className="text-center mb-8">
+                                    <h3 className="text-2xl font-bold text-[#d4af37] mb-2">Numéro de certificat: #{firstCertificateData?.toString()}</h3>                                    
+                                </div>
+                                
+                                <div className="space-y-4">
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="border-b border-gray-200 pb-2">
+                                            <div className="text-sm text-gray-600">Matériau</div>
+                                            <div className="font-medium">{EnumConverter.getMaterialLabel(firstCertificate.materials[0])}</div>
+                                        </div>
+                                        <div className="border-b border-gray-200 pb-2">
+                                            <div className="text-sm text-gray-600">Pierre précieuse</div>
+                                            <div className="font-medium">{EnumConverter.getGemstoneLabel(firstCertificate.gemStones[0])}</div>
+                                        </div>
+                                    </div>
+
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="border-b border-gray-200 pb-2">
+                                            <div className="text-sm text-gray-600">Poids</div>
+                                            <div className="font-medium">{firstCertificate.weightInGrams} grammes</div>
+                                        </div>
+                                        <div className="border-b border-gray-200 pb-2">
+                                            <div className="text-sm text-gray-600">Couleur</div>
+                                            <div className="font-medium">{firstCertificate.mainColor}</div>
+                                        </div>
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="border-b border-gray-200 pb-2">
+                                            <div className="text-sm text-gray-600">Niveau de certification</div>
+                                            <div className="font-medium">{EnumConverter.getCertificateLevelLabel(firstCertificate.level)}</div>
+                                        </div>
+                                        <div className="border-b border-gray-200 pb-2">
+                                            <div className="text-sm text-gray-600">Date de création</div>
+                                            <div className="font-medium">{formatEVMDate(firstCertificate.creationDate)}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
                             </div>
                         )}
                         {certificateCount === 0 && !balanceError && (
