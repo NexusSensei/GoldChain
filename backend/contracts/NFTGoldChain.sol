@@ -152,22 +152,6 @@ contract GoldChainERC721 is ERC721 {
         return tokenId;
     }
 
-    // get string attributes of properties, used in tokenURI call
-    function getTraits(uint _Id) internal virtual view returns (string memory) {
-        // string memory o=string(abi.encodePacked(tr1,JewelerName,tr2,mainMaterial,tr3,mainGemStones));
-        // return string(abi.encodePacked(o,tr4,Strings.toString(weightInGrams),tr5,mainColor,tr6,CertificateLevel,tr7));
-        return "";
-    }
-
-    function genSVG(uint _Id) internal virtual pure returns (string memory) {
-        // string memory output = string(abi.encodePacked());
-        // output = string(abi.encodePacked(if0,if1,if2,if3,if4));
-        // output = string(abi.encodePacked(output,if5,if6,if7,if8));
-        // output = string(abi.encodePacked(output,if9,if10,if11,if12));
-        // output = string(abi.encodePacked(output,if4,if14,if15));
-        // return string(abi.encodePacked(output,if4,Strings.toString(_Id),if18));
-        return "";
-    }
 
     function tokenURI(uint256 tokenId) override virtual public view returns (string memory) {        
         // return string(abi.encodePacked(rl4,Base64.encode(bytes(string(abi.encodePacked(rl1,Strings.toString(tokenId),getTraits(tokenId),Base64.encode(bytes(genSVG(tokenId))),rl3))))));
@@ -175,20 +159,13 @@ contract GoldChainERC721 is ERC721 {
     }
     // The following functions are overrides required by Solidity.
 
-    function _update(address to, uint256 tokenId, address auth)
-        internal
-        override(ERC721)
-        returns (address)
-    {
-        return super._update(to, tokenId, auth);
-    }
-
-    function _increaseBalance(address account, uint128 value)
-        internal
-        override(ERC721)
-    {
-        super._increaseBalance(account, value);
-    }
+    // function _update(address to, uint256 tokenId, address auth)
+    //     internal
+    //     override(ERC721)
+    //     returns (address)
+    // {
+    //     return super._update(to, tokenId, auth);
+    // }    
 
     function supportsInterface(bytes4 interfaceId)
         public
@@ -198,6 +175,11 @@ contract GoldChainERC721 is ERC721 {
         returns (bool)
     {
         return super.supportsInterface(interfaceId);
+    }
+
+    // Fonction de test pour l'encodage base64
+    function Base64Encode(bytes memory data) public pure returns (string memory) {
+        return Base64.encode(data);
     }
     
 }

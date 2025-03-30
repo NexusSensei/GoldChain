@@ -226,13 +226,13 @@ contract GoldChain is AccessControl, GoldChainERC721 {
         return dataStorage.getCustomerCount();
     }
 
-    function getTraits(uint _Id) override internal view returns (string memory) {   
+    function getTraits(uint _Id) internal view returns (string memory) {   
         IDataStorage.Certificate memory cert = dataStorage.getOneCertificate(_Id);             
         string memory o=string(abi.encodePacked(tr1,cert.JewelerName,tr2,cert.materials[0],tr3,cert.gemStones[0]));
         return string(abi.encodePacked(o,tr4,Strings.toString(cert.weightInGrams),tr5,cert.mainColor,tr6,cert.level,tr7));
     }
 
-    function genSVG(uint _Id) override internal pure returns (string memory) {
+    function genSVG(uint _Id) internal pure returns (string memory) {
 
         string memory output = string(abi.encodePacked());
         output = string(abi.encodePacked(if0,if1,if2,if3,if4));
