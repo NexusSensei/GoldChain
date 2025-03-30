@@ -133,8 +133,6 @@ pragma solidity 0.8.28;
 
     function updateCertificate() external returns (bool);
 
-    function transertCertificate() external returns (bool);
-
     function getOneJeweler(address _jewelerAddress) external view returns(Jeweler memory);
 
     function getOneCustomer(address _customerAddress) external view returns(Customer memory);

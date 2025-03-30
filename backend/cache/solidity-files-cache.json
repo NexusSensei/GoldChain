@@ -2,8 +2,8 @@
   "_format": "hh-sol-cache-2",
   "files": {
     "/home/nexus/dev/alyra/GoldChain/backend/contracts/DataStorage.sol": {
-      "lastModificationDate": 1743323256650,
-      "contentHash": "f9bd25d6a90ef1cd28580d0cdc9a01ca",
+      "lastModificationDate": 1743356643306,
+      "contentHash": "7c534adf9b61135284d8f5c7ad0ec2d4",
       "sourceName": "contracts/DataStorage.sol",
       "solcConfig": {
         "version": "0.8.28",
@@ -264,8 +264,8 @@
       ]
     },
     "/home/nexus/dev/alyra/GoldChain/backend/contracts/GoldChain.sol": {
-      "lastModificationDate": 1743329890980,
-      "contentHash": "5f7c3514886ab0e6db19a531650ab520",
+      "lastModificationDate": 1743356720990,
+      "contentHash": "4899e06af2ab859cbeb5276cb4b22db0",
       "sourceName": "contracts/GoldChain.sol",
       "solcConfig": {
         "version": "0.8.28",
@@ -294,7 +294,8 @@
       "imports": [
         "@openzeppelin/contracts/access/AccessControl.sol",
         "../interfaces/IDataStorage.sol",
-        "./NFTGoldChain.sol"
+        "./NFTGoldChain.sol",
+        "./constants/GoldChainConstants.sol"
       ],
       "versionPragmas": [
         "0.8.28"
@@ -304,8 +305,8 @@
       ]
     },
     "/home/nexus/dev/alyra/GoldChain/backend/interfaces/IDataStorage.sol": {
-      "lastModificationDate": 1743323522521,
-      "contentHash": "f22e29b2a58dc0c680d984721b03c51f",
+      "lastModificationDate": 1743356625896,
+      "contentHash": "04eca47e2a21027c02059934ff65c225",
       "sourceName": "interfaces/IDataStorage.sol",
       "solcConfig": {
         "version": "0.8.28",
@@ -840,8 +841,8 @@
       ]
     },
     "/home/nexus/dev/alyra/GoldChain/backend/contracts/NFTGoldChain.sol": {
-      "lastModificationDate": 1743331931591,
-      "contentHash": "762ad7501c6b8078e7777419b1568d05",
+      "lastModificationDate": 1743353264861,
+      "contentHash": "160ec780c1c4b654e5640bdc2f7edb63",
       "sourceName": "contracts/NFTGoldChain.sol",
       "solcConfig": {
         "version": "0.8.28",
@@ -869,6 +870,7 @@
       },
       "imports": [
         "@openzeppelin/contracts/token/ERC721/ERC721.sol",
+        "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol",
         "@openzeppelin/contracts/utils/Strings.sol"
       ],
       "versionPragmas": [
@@ -877,6 +879,42 @@
       "artifacts": [
         "Base64",
         "GoldChainERC721"
+      ]
+    },
+    "/home/nexus/dev/alyra/GoldChain/backend/contracts/constants/GoldChainConstants.sol": {
+      "lastModificationDate": 1743355500350,
+      "contentHash": "0ab3ae636894844ce8a2281354d16020",
+      "sourceName": "contracts/constants/GoldChainConstants.sol",
+      "solcConfig": {
+        "version": "0.8.28",
+        "settings": {
+          "evmVersion": "paris",
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "0.8.28"
+      ],
+      "artifacts": [
+        "GoldChainConstants"
       ]
     }
   }

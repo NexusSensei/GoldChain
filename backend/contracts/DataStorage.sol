@@ -81,7 +81,9 @@ import "@openzeppelin/contracts/access/Ownable.sol";
         string JewelerName;
         //transfers
         CertificateStatus status;
-    }
+    }    
+
+
 
     /* ::::::::::::::: VARIABLES  :::::::::::::::::: */
     uint private _jewelerCount;
@@ -212,10 +214,6 @@ import "@openzeppelin/contracts/access/Ownable.sol";
         return true;
     }
 
-    function transertCertificate() external returns (bool) {
-        return true;
-    }
-
     function getOneJeweler(address _jewelerAddress) public view returns(Jeweler memory) {
         return jewelers[_jewelerAddress];
     }
@@ -232,7 +230,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
         return _jewelerCount;
     }
 
-    function getOneCertificate(uint _certificateId) internal view returns(Certificate memory) {
+    function getOneCertificate(uint _certificateId) external view returns(Certificate memory) {
         return certificates[_certificateId];
     }
 

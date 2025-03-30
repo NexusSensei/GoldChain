@@ -37,6 +37,13 @@ describe("NFTGoldChain", function () {
             expect(await nftGoldChain.ownerOf(0)).to.equal(addr1.address);
             expect(await nftGoldChain.ownerOf(1)).to.equal(addr2.address);
         });
+
+        it("Should tokenOfOwnerByIndex return the correct token ID", async function () {
+            await nftGoldChain.safeMint(addr1.address);
+            await nftGoldChain.safeMint(addr2.address);
+            expect(await nftGoldChain.tokenOfOwnerByIndex(addr1.address, 0)).to.equal(0);
+            expect(await nftGoldChain.tokenOfOwnerByIndex(addr2.address, 0)).to.equal(1);
+        });
     });
 
     describe("Token URI", function () {

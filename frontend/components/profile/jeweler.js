@@ -45,6 +45,34 @@ const Jeweler = () => {
     const [weightInGrams, setWeightInGrams] = useState("");
     const [jewelerColor, setJewelerColor] = useState("");
     const [certificateLevel, setCertificateLevel] = useState("");
+    const [firstCertificate, setFirstCertificate] = useState(null);
+
+    // Lecture du nombre de certificats
+    const { data: certificateCount, error: balanceError } = useReadContract({
+        address: CONTRACT_ADDRESS,
+        abi: CONTRACT_ABI,
+        functionName: "balanceOf",
+        args: [address],
+        enabled: !!address
+    });
+
+    // Lecture du premier certificat si balance > 0
+    const { data: firstCertificateData, error: tokenError } = useReadContract({
+        address: CONTRACT_ADDRESS,
+        abi: CONTRACT_ABI,
+        functionName: "tokenOfOwnerByIndex",
+        args: [address, 0],
+        enabled: !!address && certificateCount > 0
+    });
+
+    // Lecture des détails du certificat
+    const { data: certificateDetails, error: detailsError } = useReadContract({
+        address: CONTRACT_ADDRESS,
+        abi: CONTRACT_ABI,
+        functionName: "getOneCertificate",
+        args: [firstCertificateData],
+        enabled: !!firstCertificateData
+    });
 
     useEffect(() => {
         if (jeweler && typeof jeweler === 'object') {
@@ -56,6 +84,12 @@ const Jeweler = () => {
             setAvailable(jeweler.available ?? false);
         }
     }, [jeweler]);
+
+    useEffect(() => {
+        if (certificateDetails) {
+            setFirstCertificate(certificateDetails);
+        }
+    }, [certificateDetails]);
 
     // Réinitialiser l'état de la transaction quand l'adresse change
     useEffect(() => {
@@ -252,14 +286,6 @@ const Jeweler = () => {
                 </CardFooter>
             </Card>
             <Card className="w-[600px]">
-            {console.log("Values:", {
-                material,
-                gemstone,
-                weightInGrams,
-                jewelerColor,
-                certificateLevel,
-                available
-            })}
                 <CardHeader>
                     <CardTitle>Vos certificats</CardTitle>
                     <CardDescription>
@@ -267,10 +293,37 @@ const Jeweler = () => {
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
+                    {console.log("certificateCount", certificateCount)}
+                    {console.log("firstCertificate", firstCertificate)}
                     <div className="flex flex-col gap-4">
-                        {CreatedCertificateIds.map((id) => (
-                            <div key={id}>{id}</div>
-                        ))}
+                        {balanceError && (
+                            <div className="text-red-500">
+                                Erreur lors de la lecture du nombre de certificats: {balanceError.message}
+                            </div>
+                        )}
+                        {tokenError && (
+                            <div className="text-red-500">
+                                Erreur lors de la lecture du premier certificat: {tokenError.message}
+                            </div>
+                        )}
+                        {detailsError && (
+                            <div className="text-red-500">
+                                Erreur lors de la lecture des détails du certificat: {detailsError.message}
+                            </div>
+                        )}
+                        {certificateCount > 0 && firstCertificate && (
+                            <div className="space-y-2">
+                                <div>ID du certificat: {firstCertificateData?.toString()}</div>
+                                <div>Matériau: {firstCertificate.material}</div>
+                                <div>Pierre précieuse: {firstCertificate.gemstone}</div>
+                                <div>Poids: {firstCertificate.weightInGrams} grammes</div>
+                                <div>Couleur: {firstCertificate.color}</div>
+                                <div>Niveau: {firstCertificate.certificateLevel}</div>
+                            </div>
+                        )}
+                        {certificateCount === 0 && !balanceError && (
+                            <div>Aucun certificat trouvé</div>
+                        )}
                     </div>
                 </CardContent>
             </Card>

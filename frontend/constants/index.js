@@ -471,42 +471,22 @@ export const CONTRACT_ABI=[
     "type": "event"
   },
   {
-    "inputs": [],
-    "name": "ADMIN",
-    "outputs": [
+    "inputs": [
       {
-        "internalType": "bytes32",
-        "name": "",
-        "type": "bytes32"
+        "internalType": "bytes",
+        "name": "data",
+        "type": "bytes"
       }
     ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "CERTIFICATOR_ROLE",
+    "name": "Base64Encode",
     "outputs": [
       {
-        "internalType": "bytes32",
+        "internalType": "string",
         "name": "",
-        "type": "bytes32"
+        "type": "string"
       }
     ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "CUSTOMERS_ROLE",
-    "outputs": [
-      {
-        "internalType": "bytes32",
-        "name": "",
-        "type": "bytes32"
-      }
-    ],
-    "stateMutability": "view",
+    "stateMutability": "pure",
     "type": "function"
   },
   {
@@ -530,19 +510,6 @@ export const CONTRACT_ABI=[
         "internalType": "bool",
         "name": "",
         "type": "bool"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "JEWELERS_ROLE",
-    "outputs": [
-      {
-        "internalType": "bytes32",
-        "name": "",
-        "type": "bytes32"
       }
     ],
     "stateMutability": "view",
@@ -796,6 +763,72 @@ export const CONTRACT_ABI=[
         "internalType": "uint256",
         "name": "",
         "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_certificateId",
+        "type": "uint256"
+      }
+    ],
+    "name": "getOneCertificate",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "creationDate",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "updated_at",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint8[]",
+            "name": "materials",
+            "type": "uint8[]"
+          },
+          {
+            "internalType": "uint8[]",
+            "name": "gemStones",
+            "type": "uint8[]"
+          },
+          {
+            "internalType": "uint8",
+            "name": "weightInGrams",
+            "type": "uint8"
+          },
+          {
+            "internalType": "string",
+            "name": "mainColor",
+            "type": "string"
+          },
+          {
+            "internalType": "enum IDataStorage.CertificateLevel",
+            "name": "level",
+            "type": "uint8"
+          },
+          {
+            "internalType": "string",
+            "name": "JewelerName",
+            "type": "string"
+          },
+          {
+            "internalType": "enum IDataStorage.CertificateStatus",
+            "name": "status",
+            "type": "uint8"
+          }
+        ],
+        "internalType": "struct IDataStorage.Certificate",
+        "name": "",
+        "type": "tuple"
       }
     ],
     "stateMutability": "view",
@@ -1264,30 +1297,6 @@ export const CONTRACT_ABI=[
       }
     ],
     "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_to",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_tokenId",
-        "type": "uint256"
-      }
-    ],
-    "name": "transertCertificate",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
