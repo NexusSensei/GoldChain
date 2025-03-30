@@ -215,6 +215,72 @@
     {
       "inputs": [
         {
+          "internalType": "uint256",
+          "name": "_certificateId",
+          "type": "uint256"
+        }
+      ],
+      "name": "getOneCertificate",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "uint256",
+              "name": "creationDate",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "updated_at",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint8[]",
+              "name": "materials",
+              "type": "uint8[]"
+            },
+            {
+              "internalType": "uint8[]",
+              "name": "gemStones",
+              "type": "uint8[]"
+            },
+            {
+              "internalType": "uint8",
+              "name": "weightInGrams",
+              "type": "uint8"
+            },
+            {
+              "internalType": "string",
+              "name": "mainColor",
+              "type": "string"
+            },
+            {
+              "internalType": "enum IDataStorage.CertificateLevel",
+              "name": "level",
+              "type": "uint8"
+            },
+            {
+              "internalType": "string",
+              "name": "JewelerName",
+              "type": "string"
+            },
+            {
+              "internalType": "enum IDataStorage.CertificateStatus",
+              "name": "status",
+              "type": "uint8"
+            }
+          ],
+          "internalType": "struct IDataStorage.Certificate",
+          "name": "",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
           "internalType": "address",
           "name": "_customerAddress",
           "type": "address"

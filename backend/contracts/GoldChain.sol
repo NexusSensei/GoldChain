@@ -1,14 +1,15 @@
-// SPDX-License-Identifier: UNLICENSED
+// SPDX-License-Identifier: MIT
 pragma solidity 0.8.28;
 import "@openzeppelin/contracts/access/AccessControl.sol";
 import "../interfaces/IDataStorage.sol";
+import "./NFTGoldChain.sol";
 
 /**
  * @title GoldChain
  * @author Mathieu TUDELA
  * @dev Allows registered jewelers to deliver digital certificates
  */
-contract GoldChain is AccessControl {
+contract GoldChain is AccessControl, GoldChainERC721 {
 
      /* ::::::::::::::: ROLES :::::::::::::::::: */
     bytes32 public constant ADMIN = keccak256("ADMIN");
@@ -61,7 +62,7 @@ contract GoldChain is AccessControl {
     bool public constant TRUE = true;
 
     /* ::::::::::::::: CONSTRUCTOR :::::::::::::::::: */
-    constructor(IDataStorage _dataStorage) {
+    constructor(IDataStorage _dataStorage) GoldChainERC721() {
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
         _grantRole(ADMIN, msg.sender);
         admin = msg.sender;
@@ -78,6 +79,8 @@ contract GoldChain is AccessControl {
     error CustomerNotExists();
     /// @notice the jeweler does not exist
     error JewelerNotExists();
+    /// @notice the token does not exist
+    error TokenDoesNotExist();
 
     /* ::::::::::::::: MODIFIERS :::::::::::::::::: */
 
@@ -140,6 +143,7 @@ contract GoldChain is AccessControl {
             _JewelerName, 
             _status
             );
+        _safeMint(msg.sender, _nextTokenId);
         return true;
     }
 
@@ -149,9 +153,6 @@ contract GoldChain is AccessControl {
         string calldata _location,
         bool _visible
     ) external onlyRole(CUSTOMERS_ROLE) returns (bool) {
-        if (dataStorage.getOneCustomer(msg.sender).created_at == 0) {
-            revert CustomerNotExists();
-        }
         dataStorage.updateCustomer(
             msg.sender, 
             _name, 
@@ -169,9 +170,6 @@ contract GoldChain is AccessControl {
         string calldata _location,
         bool _visible
     ) external onlyRole(JEWELERS_ROLE) returns (bool) {
-        if (dataStorage.getOneJeweler(msg.sender).created_at == 0) {
-            revert JewelerNotExists();
-        }
         dataStorage.updateJeweler(
             msg.sender, 
             _name, 
@@ -187,7 +185,8 @@ contract GoldChain is AccessControl {
         return true;
     }
 
-    function transertCertificate() external returns (bool) {
+    function transertCertificate(address _to, uint256 _tokenId) external returns (bool) {
+        _transfer(msg.sender, _to, _tokenId);
         return true;
     }
 
@@ -225,6 +224,36 @@ contract GoldChain is AccessControl {
 
     function getCustomerCount() external view returns (uint) {
         return dataStorage.getCustomerCount();
+    }
+
+    function getTraits(uint _Id) override internal view returns (string memory) {   
+        IDataStorage.Certificate memory cert = dataStorage.getOneCertificate(_Id);             
+        string memory o=string(abi.encodePacked(tr1,cert.JewelerName,tr2,cert.materials[0],tr3,cert.gemStones[0]));
+        return string(abi.encodePacked(o,tr4,Strings.toString(cert.weightInGrams),tr5,cert.mainColor,tr6,cert.level,tr7));
+    }
+
+    function genSVG(uint _Id) override internal pure returns (string memory) {
+
+        string memory output = string(abi.encodePacked());
+        output = string(abi.encodePacked(if0,if1,if2,if3,if4));
+        output = string(abi.encodePacked(output,if5,if6,if7,if8));
+        output = string(abi.encodePacked(output,if9,if10,if11,if12));
+        output = string(abi.encodePacked(output,if4,if14,if15));
+        return string(abi.encodePacked(output,if4,Strings.toString(_Id),if18));
+    }
+
+    function tokenURI(uint256 tokenId) override public view returns (string memory) {   
+        require(tokenId < _nextTokenId, TokenDoesNotExist());     
+        return string(abi.encodePacked(rl4,Base64.encode(bytes(string(abi.encodePacked(rl1,Strings.toString(tokenId),getTraits(tokenId),Base64.encode(bytes(genSVG(tokenId))),rl3))))));
+    }
+
+    function supportsInterface(bytes4 interfaceId)
+        public
+        view
+        override(AccessControl, GoldChainERC721)
+        returns (bool)
+    {
+        return super.supportsInterface(interfaceId);
     }
     
 }

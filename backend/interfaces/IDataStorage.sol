@@ -143,5 +143,7 @@ pragma solidity 0.8.28;
 
     function getJewelerCount() external view returns(uint);
 
+    function getOneCertificate(uint _certificateId) external view returns(Certificate memory);
+
     function getCertificateCount() external view returns(uint);
 }

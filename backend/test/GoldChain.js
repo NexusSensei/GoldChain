@@ -62,6 +62,15 @@ describe("testing GoldChain", function () {
       expect(await goldChain.getJewelerCount()).to.equal(1);
     });
 
+    it("should not add a jeweler if already exists", async function () {
+      const { goldChain, jeweler1 } = await loadFixture(deployGoldChainFixture);
+      await goldChain.connect(jeweler1).createJeweler(JEWELER1NAME, JEWELER1EMAIL, JEWELER1LOCATION);
+      await expect(goldChain.connect(jeweler1).createJeweler(JEWELER1NAME, JEWELER1EMAIL, JEWELER1LOCATION)).to.be.revertedWithCustomError(
+        goldChain,
+        "JewelerIsAlreadyRegistered"
+      );
+    });
+
     it("should add a jeweler with correct name", async function () {
       const { goldChain, jeweler1 } = await loadFixture(deployGoldChainFixture);
       await goldChain.connect(jeweler1).createJeweler(JEWELER1NAME, JEWELER1EMAIL, JEWELER1LOCATION);
@@ -104,6 +113,20 @@ describe("testing GoldChain", function () {
         "jewelerCreated"
         ).withArgs(jeweler1.address, anyValue); 
     });
+
+    it("should mint a NFT", async function () {
+      const { goldChain, jeweler1 } = await loadFixture(deployGoldChainFixture);
+      await goldChain.connect(jeweler1).createJeweler(JEWELER1NAME, JEWELER1EMAIL, JEWELER1LOCATION);
+      await goldChain.connect(jeweler1).createCertificate([0], [0], 8, "red", 0, "jeweler1", 0);
+      expect(await goldChain.balanceOf(jeweler1.address)).to.equal(1);
+    });
+
+    it("should mint a NFT with correct ID", async function () {
+      const { goldChain, jeweler1 } = await loadFixture(deployGoldChainFixture);
+      await goldChain.connect(jeweler1).createJeweler(JEWELER1NAME, JEWELER1EMAIL, JEWELER1LOCATION);
+      await goldChain.connect(jeweler1).createCertificate([0], [0], 8, "red", 0, "jeweler1", 0);
+      expect(await goldChain.connect(jeweler1).balanceOf(jeweler1.address)).to.equal(1);
+    });   
     
   });
 
@@ -114,6 +137,14 @@ describe("testing GoldChain", function () {
       await goldChain.connect(jeweler1).updateJeweler(JEWELER2NAME, JEWELER1EMAIL, JEWELER1LOCATION, VISIBLE);
       let jew = await goldChain.getOneJeweler(jeweler1.address);
       expect(jew.name).to.equal(JEWELER2NAME);
+    });
+
+    it("should not update a jeweler if not exists", async function () {
+      const { goldChain, jeweler1 } = await loadFixture(deployGoldChainFixture);
+      await expect(goldChain.connect(jeweler1).updateJeweler(JEWELER2NAME, JEWELER2EMAIL, JEWELER2LOCATION, VISIBLE)).to.be.revertedWithCustomError(
+        goldChain,
+        "AccessControlUnauthorizedAccount"
+      );
     });
 
     it("should update a jeweler email", async function () {
@@ -159,6 +190,15 @@ describe("testing GoldChain", function () {
       expect(await goldChain.getCustomerCount()).to.equal(1);
     });
 
+    it("should not add a customer if already exists", async function () {
+      const { goldChain, customer1 } = await loadFixture(deployGoldChainFixture);
+      await goldChain.connect(customer1).createCustomer(CUSTOMER1NAME, CUSTOMER1EMAIL, CUSTOMER1LOCATION);
+      await expect(goldChain.connect(customer1).createCustomer(CUSTOMER1NAME, CUSTOMER1EMAIL, CUSTOMER1LOCATION)).to.be.revertedWithCustomError(
+        goldChain,
+        "CustomerIsAlreadyRegistered"
+      );
+    });
+
     it("should add a customer with correct name", async function () {
       const { goldChain, customer1 } = await loadFixture(deployGoldChainFixture);
       await goldChain.connect(customer1).createCustomer(CUSTOMER1NAME, CUSTOMER1EMAIL, CUSTOMER1LOCATION);
@@ -196,6 +236,14 @@ describe("testing GoldChain", function () {
       await goldChain.connect(customer1).updateCustomer(CUSTOMER2NAME, CUSTOMER1EMAIL, CUSTOMER1LOCATION, VISIBLE);
       let cust = await goldChain.getOneCustomer(customer1.address);
       expect(cust.name).to.equal(CUSTOMER2NAME);
+    });
+
+    it("should not update a customer if not exists", async function () {
+      const { goldChain, customer1 } = await loadFixture(deployGoldChainFixture);
+      await expect(goldChain.connect(customer1).updateCustomer(CUSTOMER2NAME, CUSTOMER2EMAIL, CUSTOMER2LOCATION, VISIBLE)).to.be.revertedWithCustomError(
+        goldChain,
+        "AccessControlUnauthorizedAccount"
+      );
     });
 
     it("should update a customer email", async function () {

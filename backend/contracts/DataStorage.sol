@@ -232,6 +232,10 @@ import "@openzeppelin/contracts/access/Ownable.sol";
         return _jewelerCount;
     }
 
+    function getOneCertificate(uint _certificateId) internal view returns(Certificate memory) {
+        return certificates[_certificateId];
+    }
+
     function getCertificateCount() external view returns(uint) {
         return _certificateCount;
     }
