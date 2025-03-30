@@ -168,7 +168,7 @@ const Jeweler = () => {
         <div className="flex flex-col items-center min-h-[80vh] p-4 gap-4">
             <Card className="w-[600px]">
                 <CardHeader>
-                    <CardTitle>Votre profil Bijoutier</CardTitle>
+                    <CardTitle>Vos Informations</CardTitle>
                     <CardDescription>
                         Mettre à jour vos informations
                     </CardDescription>

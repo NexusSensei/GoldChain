@@ -13,10 +13,17 @@ const MyProfile = () => {
     const { isConnected,  status, address : userAddress } = useAccount();
     return (
       <>
+      <div className="flex justify-center items-center">
+            <h1 className="text-4xl font-bold text-center bg-gold-gradient text-transparent bg-clip-text drop-shadow-gold [text-shadow:var(--tw-shadow)]">
+                {userProfile == "unknown" && "S'enregistrer"}
+                {userProfile == "customer" && "Mon Profil Client"}
+                {userProfile == "jeweler" && "Mon Profil Bijoutier"}
+                {userProfile == "admin" && "Mon Profil Administrateur"}
+            </h1>
+        </div>
       {isConnected ? (
         <div>
-        <div>Mon adresse : {userAddress}</div>
-        <div>Mon profil {userProfile}
+        <div>
           {userProfile == "unknown" && <AddProfile />}
           {userProfile == "customer" && <Customer />}
           {userProfile == "jeweler" && <Jeweler />}
@@ -24,7 +31,9 @@ const MyProfile = () => {
         </div>
       </div>
       ) : (
-        <NotConnected />
+        <div className="py-8">
+            <NotConnected />
+        </div>
       )}
     </>
 

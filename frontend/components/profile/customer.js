@@ -93,7 +93,7 @@ const Customer = () => {
         <div className="flex justify-center items-center min-h-[80vh] p-4">
             <Card className="w-[600px]">
                 <CardHeader>
-                    <CardTitle>Votre profil Client</CardTitle>
+                    <CardTitle>Vos Informations</CardTitle>
                     <CardDescription>
                         Mettre à jour vos informations
                         {console.log(customer)}

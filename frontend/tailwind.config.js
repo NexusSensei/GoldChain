@@ -5,6 +5,7 @@ module.exports = {
     "./pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/**/*.{js,jsx}",
   ],
   theme: {
   	extend: {
@@ -54,7 +55,16 @@ module.exports = {
   			lg: 'var(--radius)',
   			md: 'calc(var(--radius) - 2px)',
   			sm: 'calc(var(--radius) - 4px)'
-  		}
+  		},
+  		textShadow: {
+  			'gold': '0 1px 0 rgb(0 0 0 / 40%)',
+  		},
+  		dropShadow: {
+  			'gold': '0 2px 2px rgba(0,0,0,0.3)',
+  		},
+  		backgroundImage: {
+  			'gold-gradient': 'linear-gradient(to bottom, #FFD700, #DAA520, #B8860B)',
+  		},
   	}
   },
   plugins: [require("tailwindcss-animate")],
