@@ -58,13 +58,13 @@ const Jeweler = () => {
         enabled: !!address
     });
 
-    // Lecture du premier certificat si balance > 0
-    const { data: firstCertificateData, error: tokenError } = useReadContract({
+    // Lecture du dernier certificat si balance > 0
+    const { data: lastCertificateData, error: tokenError } = useReadContract({
         address: CONTRACT_ADDRESS,
         abi: CONTRACT_ABI,
         functionName: "tokenOfOwnerByIndex",
-        args: [address, 0],
-        enabled: !!address && certificateCount > 0
+        args: [address, certificateCount > 0n ? certificateCount - 1n : 0n],
+        enabled: !!address && certificateCount > 0n && typeof certificateCount === 'bigint'
     });
 
     // Lecture des détails du certificat
@@ -72,8 +72,8 @@ const Jeweler = () => {
         address: CONTRACT_ADDRESS,
         abi: CONTRACT_ABI,
         functionName: "getOneCertificate",
-        args: [firstCertificateData],
-        enabled: !!firstCertificateData
+        args: [lastCertificateData],
+        enabled: !!lastCertificateData && typeof lastCertificateData === 'bigint' && certificateCount > 0n
     });
 
     useEffect(() => {
@@ -89,10 +89,9 @@ const Jeweler = () => {
 
     useEffect(() => {
         if (certificateDetails) {
-            console.log('Certificate Details:', certificateDetails);
-            console.log('Timestamp:', certificateDetails.timestamp);
-            console.log('Timestamp type:', typeof certificateDetails.timestamp);
             setFirstCertificate(certificateDetails);
+        } else {
+            setFirstCertificate(null);
         }
     }, [certificateDetails]);
 
@@ -294,32 +293,30 @@ const Jeweler = () => {
                 <CardHeader>
                     <CardTitle>Vos certificats</CardTitle>
                     <CardDescription>
-                        Voir vos certificats
+                        Voir votre dernier certificat
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
-                    {console.log("certificateCount", certificateCount)}
-                    {console.log("firstCertificate", firstCertificate)}
                     <div className="flex flex-col gap-4">
                         {balanceError && (
                             <div className="text-red-500">
                                 Erreur lors de la lecture du nombre de certificats: {balanceError.message}
                             </div>
                         )}
-                        {tokenError && (
+                        {tokenError && certificateCount > 0n && (
                             <div className="text-red-500">
-                                Erreur lors de la lecture du premier certificat: {tokenError.message}
+                                Erreur lors de la lecture du dernier certificat: {tokenError.message}
                             </div>
                         )}
-                        {detailsError && (
+                        {detailsError && certificateCount > 0n && (
                             <div className="text-red-500">
                                 Erreur lors de la lecture des détails du certificat: {detailsError.message}
                             </div>
                         )}
-                        {certificateCount > 0 && firstCertificate && (
+                        {certificateCount > 0n && firstCertificate && (
                             <div className="border-2 border-[#d4af37] rounded-lg p-8 bg-white shadow-lg">
                                 <div className="text-center mb-8">
-                                    <h3 className="text-2xl font-bold text-[#d4af37] mb-2">Numéro de certificat: #{firstCertificateData?.toString()}</h3>                                    
+                                    <h3 className="text-2xl font-bold text-[#d4af37] mb-2">Numéro de certificat: #{lastCertificateData?.toString()}</h3>                                    
                                 </div>
                                 
                                 <div className="space-y-4">
@@ -358,8 +355,8 @@ const Jeweler = () => {
                                 
                             </div>
                         )}
-                        {certificateCount === 0 && !balanceError && (
-                            <div>Aucun certificat trouvé</div>
+                        {(!certificateCount || certificateCount === 0n) && !balanceError && (
+                            <div className="text-center text-gray-500">Aucun certificat trouvé</div>
                         )}
                     </div>
                 </CardContent>
