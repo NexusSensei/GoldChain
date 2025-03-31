@@ -126,7 +126,7 @@ contract GoldChain is AccessControl, GoldChainERC721 {
             _JewelerName, 
             _status
         );
-        _safeMint(msg.sender, _nextTokenId);
+        safeMint(msg.sender);
         return true;
     }
 

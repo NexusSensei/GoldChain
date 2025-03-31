@@ -264,8 +264,8 @@
       ]
     },
     "/home/nexus/dev/alyra/GoldChain/backend/contracts/GoldChain.sol": {
-      "lastModificationDate": 1743356720990,
-      "contentHash": "4899e06af2ab859cbeb5276cb4b22db0",
+      "lastModificationDate": 1743436821877,
+      "contentHash": "66fd1bb3e775e8722c8162cc2e4b7fe8",
       "sourceName": "contracts/GoldChain.sol",
       "solcConfig": {
         "version": "0.8.28",

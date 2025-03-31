@@ -16,7 +16,7 @@ import { Label } from "@/components/ui/label"
 import TransactionAlert from "@/components/ui/transaction-alert"
 
 import { useJeweler } from "@/components/contexts/jewelerContext"
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 import { CONTRACT_ADDRESS, CONTRACT_ABI } from "@/constants"
 
@@ -37,8 +37,7 @@ const Jeweler = () => {
     const [jewelerName, setJewelerName] = useState("");
     const [jewelerEmail, setJewelerEmail] = useState("");
     const [jewelerLocation, setJewelerLocation] = useState("");
-    const [isVisible, setIsVisible] = useState(true);
-    const [CreatedCertificateIds, setCreatedCertificateIds] = useState([]);
+    const [isVisible, setIsVisible] = useState(true);   
     const [available, setAvailable] = useState(false);
     const [isPending, setIsPending] = useState(false);
     const [showTransactionAlert, setShowTransactionAlert] = useState(false);
@@ -48,9 +47,13 @@ const Jeweler = () => {
     const [jewelerColor, setJewelerColor] = useState("");
     const [certificateLevel, setCertificateLevel] = useState("");
     const [firstCertificate, setFirstCertificate] = useState(null);
+    const [jewelerCertificateCount, setJewelerCertificateCount] = useState(0);
+
+    // Ajouter un état pour gérer le montage du composant
+    const [isMounted, setIsMounted] = useState(false);
 
     // Lecture du nombre de certificats
-    const { data: certificateCount, error: balanceError } = useReadContract({
+    const { data: certificateCount, error: balanceError, refetch: refetchCertificateCount } = useReadContract({
         address: CONTRACT_ADDRESS,
         abi: CONTRACT_ABI,
         functionName: "balanceOf",
@@ -59,7 +62,7 @@ const Jeweler = () => {
     });
 
     // Lecture du dernier certificat si balance > 0
-    const { data: lastCertificateData, error: tokenError } = useReadContract({
+    const { data: lastCertificateData, error: tokenError, refetch: refetchLastCertificate } = useReadContract({
         address: CONTRACT_ADDRESS,
         abi: CONTRACT_ABI,
         functionName: "tokenOfOwnerByIndex",
@@ -68,7 +71,7 @@ const Jeweler = () => {
     });
 
     // Lecture des détails du certificat
-    const { data: certificateDetails, error: detailsError } = useReadContract({
+    const { data: certificateDetails, error: detailsError, refetch: refetchCertificateDetails } = useReadContract({
         address: CONTRACT_ADDRESS,
         abi: CONTRACT_ABI,
         functionName: "getOneCertificate",
@@ -82,10 +85,15 @@ const Jeweler = () => {
             setJewelerEmail(jeweler.email ?? "");
             setJewelerLocation(jeweler.location ?? "");
             setIsVisible(jeweler.visible ?? false);
-            setCreatedCertificateIds(jeweler.CreatedCertificateIds ?? []);
             setAvailable(jeweler.available ?? false);
         }
     }, [jeweler]);
+    
+    useEffect(() => {
+        if (certificateCount) {
+            setJewelerCertificateCount(certificateCount);
+        }
+    }, [certificateCount]);
 
     useEffect(() => {
         if (certificateDetails) {
@@ -105,12 +113,61 @@ const Jeweler = () => {
     const { data: hash, error: writeError, writeContract } = useWriteContract();
     
     const { isLoading: isConfirming, isSuccess: isConfirmed } = useWaitForTransactionReceipt({
-        hash,
-        onSuccess: () => {
-            getJeweler();
-            getUserProfile();
-        }
+        hash
     });
+
+    // Ajouter une référence pour suivre si le rafraîchissement a été effectué
+    const refreshDoneRef = useRef(false);
+
+    // Gérer la confirmation de la transaction
+    useEffect(() => {
+        const refreshData = async () => {
+            if (isConfirmed && !refreshDoneRef.current) {
+                console.log("Transaction confirmée, rafraîchissement des données...");
+                try {
+                    refreshDoneRef.current = true;
+                    
+                    // 1. Mettre à jour le profil
+                    await getJeweler();
+                    await getUserProfile();
+                    
+                    // 2. Mettre à jour le nombre de certificats
+                    await refetchCertificateCount();
+                    
+                    // 3. Mettre à jour le dernier certificat
+                    await refetchLastCertificate();
+                    
+                    // 4. Mettre à jour les détails du certificat
+                    await refetchCertificateDetails();
+                    
+                    console.log("Données mises à jour avec succès");
+                } catch (error) {
+                    console.error("Erreur lors du rafraîchissement des données:", error);
+                }
+            }
+        };
+        refreshData();
+    }, [isConfirmed, getJeweler, getUserProfile, refetchCertificateCount, refetchLastCertificate, refetchCertificateDetails]);
+
+    // Réinitialiser refreshDoneRef quand une nouvelle transaction commence
+    useEffect(() => {
+        if (hash) {
+            refreshDoneRef.current = false;
+        }
+    }, [hash]);
+
+    // Surveiller l'état de la transaction
+    useEffect(() => {
+        if (hash) {
+            console.log("Transaction hash:", hash);
+        }
+        if (isConfirming) {
+            console.log("Transaction en cours de confirmation");
+        }
+        if (isConfirmed) {
+            console.log("Transaction confirmée");
+        }
+    }, [hash, isConfirming, isConfirmed]);
 
     const handleUpdateJeweler = async () => {
         try {
@@ -134,14 +191,7 @@ const Jeweler = () => {
         try {
             setIsPending(true);
             setShowTransactionAlert(true);
-            console.log("Values:", {
-                material,
-                gemstone,
-                weightInGrams,
-                jewelerColor,
-                certificateLevel,
-                available
-            });
+            console.log("Début de la création du certificat");
             writeContract({
                 address: CONTRACT_ADDRESS,
                 abi: CONTRACT_ABI,
@@ -150,12 +200,19 @@ const Jeweler = () => {
                 account: address
             });
         } catch (error) {
-            console.error(error);
+            console.error("Erreur lors de la création du certificat:", error);
         } finally {
             setIsPending(false);
+            // Réinitialiser les champs du formulaire
         }
     };
-    if (isLoading) {
+
+    // Ajouter un useEffect pour gérer le montage
+    useEffect(() => {
+        setIsMounted(true);
+    }, []);
+
+    if (isLoading || !isMounted) {
         return <div>Chargement...</div>;
     }
 
@@ -313,7 +370,7 @@ const Jeweler = () => {
                                 Erreur lors de la lecture des détails du certificat: {detailsError.message}
                             </div>
                         )}
-                        {certificateCount > 0n && firstCertificate && (
+                        {isMounted && certificateCount > 0n && firstCertificate && (
                             <div className="border-2 border-[#d4af37] rounded-lg p-8 bg-white shadow-lg">
                                 <div className="text-center mb-8">
                                     <h3 className="text-2xl font-bold text-[#d4af37] mb-2">Numéro de certificat: #{lastCertificateData?.toString()}</h3>                                    
@@ -355,7 +412,7 @@ const Jeweler = () => {
                                 
                             </div>
                         )}
-                        {(!certificateCount || certificateCount === 0n) && !balanceError && (
+                        {isMounted && (!certificateCount || certificateCount === 0n) && !balanceError && (
                             <div className="text-center text-gray-500">Aucun certificat trouvé</div>
                         )}
                     </div>
