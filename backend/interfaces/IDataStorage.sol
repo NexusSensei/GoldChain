@@ -71,8 +71,8 @@ pragma solidity 0.8.28;
     struct Certificate {
         uint creationDate;
         uint updated_at;
-        uint8[] materials;
-        uint8[] gemStones;
+        uint8 materials;
+        uint8 gemStones;
         uint8 weightInGrams;
         string mainColor; //enum ? 
         CertificateLevel level;
@@ -102,8 +102,8 @@ pragma solidity 0.8.28;
     ) external returns (bool);
 
     function addCertificate(
-        uint8[] calldata _materials,
-        uint8[] calldata _gemStones,
+        uint8  _materials,
+        uint8  _gemStones,
         uint8 _weightInGrams,
         string calldata _mainColor, //enum ? 
         CertificateLevel _level,

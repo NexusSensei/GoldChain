@@ -109,8 +109,8 @@ contract GoldChain is AccessControl, GoldChainERC721 {
     }
 
     function createCertificate(
-        uint8[] calldata _materials,
-        uint8[] calldata _gemStones,
+        uint8 _materials,
+        uint8 _gemStones,
         uint8 _weightInGrams,
         string calldata _mainColor,
         IDataStorage.CertificateLevel _level,
@@ -205,9 +205,9 @@ contract GoldChain is AccessControl, GoldChainERC721 {
             GoldChainConstants.JSON_JEWELER_NAME,
             cert.JewelerName,
             GoldChainConstants.JSON_MATERIAL,
-            cert.materials[0],
+            cert.materials,
             GoldChainConstants.JSON_GEMSTONE,
-            cert.gemStones[0]
+            cert.gemStones
         ));
         return string(abi.encodePacked(
             o,

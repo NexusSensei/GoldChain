@@ -117,21 +117,21 @@ describe("testing GoldChain", function () {
     it("should mint a NFT", async function () {
       const { goldChain, jeweler1 } = await loadFixture(deployGoldChainFixture);
       await goldChain.connect(jeweler1).createJeweler(JEWELER1NAME, JEWELER1EMAIL, JEWELER1LOCATION);
-      await goldChain.connect(jeweler1).createCertificate([0], [0], 8, "red", 0, "jeweler1", 0);
+      await goldChain.connect(jeweler1).createCertificate(0, 0, 8, "alliance", 0, "jeweler1", 0);
       expect(await goldChain.balanceOf(jeweler1.address)).to.equal(1);
     });
 
     it("should mint a NFT with correct ID", async function () {
       const { goldChain, jeweler1 } = await loadFixture(deployGoldChainFixture);
       await goldChain.connect(jeweler1).createJeweler(JEWELER1NAME, JEWELER1EMAIL, JEWELER1LOCATION);
-      await goldChain.connect(jeweler1).createCertificate([0], [0], 8, "red", 0, "jeweler1", 0);
+      await goldChain.connect(jeweler1).createCertificate(0, 0, 8, "alliance", 0, "jeweler1", 0);
       expect(await goldChain.connect(jeweler1).balanceOf(jeweler1.address)).to.equal(1);
     });   
 
     it("should mint a NFT with correct owner", async function () {
       const { goldChain, jeweler1 } = await loadFixture(deployGoldChainFixture);
       await goldChain.connect(jeweler1).createJeweler(JEWELER1NAME, JEWELER1EMAIL, JEWELER1LOCATION);
-      await goldChain.connect(jeweler1).createCertificate([0], [0], 8, "red", 0, "jeweler1", 0);
+      await goldChain.connect(jeweler1).createCertificate(0, 0, 8, "alliance", 0, "jeweler1", 0);
       expect(await goldChain.connect(jeweler1).ownerOf(0)).to.equal(jeweler1.address);
     });   
   });
@@ -191,14 +191,14 @@ describe("testing GoldChain", function () {
     it("should create a certificate", async function () {
       const { goldChain, jeweler1 } = await loadFixture(deployGoldChainFixture);
       await goldChain.connect(jeweler1).createJeweler(JEWELER1NAME, JEWELER1EMAIL, JEWELER1LOCATION);
-      await goldChain.connect(jeweler1).createCertificate([0], [0], 8, "red", 0, "jeweler1", 0);
+      await goldChain.connect(jeweler1).createCertificate(0, 0, 8, "alliance", 0, "jeweler1", 0);
       expect(await goldChain.balanceOf(jeweler1.address)).to.equal(1);
     });
 
     it("should create a certificate whith correct jeweler name", async function () {
       const { goldChain, jeweler1 } = await loadFixture(deployGoldChainFixture);
       await goldChain.connect(jeweler1).createJeweler(JEWELER1NAME, JEWELER1EMAIL, JEWELER1LOCATION);
-      await goldChain.connect(jeweler1).createCertificate([0], [0], 8, "red", 0, "jeweler1", 0);
+      await goldChain.connect(jeweler1).createCertificate(0, 0, 8, "alliance", 0, "jeweler1", 0);
       let cert = await goldChain.getOneCertificate(0);
       console.log("cert.JewelerName", cert.jewelerName);
       console.log(cert);
