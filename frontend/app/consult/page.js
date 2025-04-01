@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { useCertificate } from "@/hooks/useCertificate";
 import { EnumConverter } from "@/utils/enumConverter";
 import { formatEVMDate } from "@/utils/dateUtils";
+import NFTDisplay from "@/components/shared/NFTDisplay";
 
 const ConsultCertificate = () => {
     const [certificateId, setCertificateId] = useState("");
@@ -25,7 +26,7 @@ const ConsultCertificate = () => {
     };
 
     return (
-        <div className="flex flex-col items-center min-h-[80vh] p-4 gap-4">
+        <div className="flex flex-col items-center min-h-[80vh] p-4 gap-8">
             <div>
                 <h1 className="text-4xl font-bold text-center bg-gold-gradient text-transparent bg-clip-text drop-shadow-gold [text-shadow:var(--tw-shadow)]">
                     Consulter certificat
@@ -117,6 +118,10 @@ const ConsultCertificate = () => {
                     </CardContent>
                 </Card>
             )}
+
+            <div className="w-full flex justify-center mt-8">
+                <NFTDisplay />
+            </div>
         </div>
     );
 };

@@ -205,9 +205,9 @@ contract GoldChain is AccessControl, GoldChainERC721 {
             GoldChainConstants.JSON_JEWELER_NAME,
             cert.JewelerName,
             GoldChainConstants.JSON_MATERIAL,
-            cert.materials,
+            Strings.toString(cert.materials),
             GoldChainConstants.JSON_GEMSTONE,
-            cert.gemStones
+            Strings.toString(cert.gemStones)
         ));
         return string(abi.encodePacked(
             o,
@@ -216,7 +216,7 @@ contract GoldChain is AccessControl, GoldChainERC721 {
             GoldChainConstants.JSON_COLOR,
             cert.mainColor,
             GoldChainConstants.JSON_LEVEL,
-            cert.level,
+            Strings.toString(uint8(cert.level)),
             GoldChainConstants.JSON_IMAGE
         ));
     }
