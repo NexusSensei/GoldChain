@@ -28,6 +28,7 @@ import { ComboboxGemsStones } from "@/components/shared/GemsStonesComboBox"
 import { ComboboxCertificateLevel } from "@/components/shared/CertificateLevelCombobox"
 import { EnumConverter } from "@/utils/enumConverter";
 import { formatEVMDate } from "@/utils/dateUtils";
+import CertificateDisplay from "@/components/shared/CertificateDisplay";
 
 const Jeweler = () => {
     const { jeweler, isLoading, error, getJeweler } = useJeweler();
@@ -346,78 +347,7 @@ const Jeweler = () => {
                     </Button>                    
                 </CardFooter>
             </Card>
-            <Card className="w-[600px]">
-                <CardHeader>
-                    <CardTitle>Vos certificats</CardTitle>
-                    <CardDescription>
-                        Voir votre dernier certificat
-                    </CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <div className="flex flex-col gap-4">
-                        {balanceError && (
-                            <div className="text-red-500">
-                                Erreur lors de la lecture du nombre de certificats: {balanceError.message}
-                            </div>
-                        )}
-                        {tokenError && certificateCount > 0n && (
-                            <div className="text-red-500">
-                                Erreur lors de la lecture du dernier certificat: {tokenError.message}
-                            </div>
-                        )}
-                        {detailsError && certificateCount > 0n && (
-                            <div className="text-red-500">
-                                Erreur lors de la lecture des détails du certificat: {detailsError.message}
-                            </div>
-                        )}
-                        {isMounted && certificateCount > 0n && firstCertificate && (
-                            <div className="border-2 border-[#d4af37] rounded-lg p-8 bg-white shadow-lg">
-                                <div className="text-center mb-8">
-                                    <h3 className="text-2xl font-bold text-[#d4af37] mb-2">Numéro de certificat: #{lastCertificateData?.toString()}</h3>                                    
-                                </div>
-                                
-                                <div className="space-y-4">
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div className="border-b border-gray-200 pb-2">
-                                            <div className="text-sm text-gray-600">Matériau</div>
-                                            <div className="font-medium">{EnumConverter.getMaterialLabel(firstCertificate.materials[0])}</div>
-                                        </div>
-                                        <div className="border-b border-gray-200 pb-2">
-                                            <div className="text-sm text-gray-600">Pierre précieuse</div>
-                                            <div className="font-medium">{EnumConverter.getGemstoneLabel(firstCertificate.gemStones[0])}</div>
-                                        </div>
-                                    </div>
-
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div className="border-b border-gray-200 pb-2">
-                                            <div className="text-sm text-gray-600">Poids</div>
-                                            <div className="font-medium">{firstCertificate.weightInGrams} grammes</div>
-                                        </div>
-                                        <div className="border-b border-gray-200 pb-2">
-                                            <div className="text-sm text-gray-600">Couleur</div>
-                                            <div className="font-medium">{firstCertificate.mainColor}</div>
-                                        </div>
-                                    </div>
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div className="border-b border-gray-200 pb-2">
-                                            <div className="text-sm text-gray-600">Niveau de certification</div>
-                                            <div className="font-medium">{EnumConverter.getCertificateLevelLabel(firstCertificate.level)}</div>
-                                        </div>
-                                        <div className="border-b border-gray-200 pb-2">
-                                            <div className="text-sm text-gray-600">Date de création</div>
-                                            <div className="font-medium">{formatEVMDate(firstCertificate.creationDate)}</div>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                            </div>
-                        )}
-                        {isMounted && (!certificateCount || certificateCount === 0n) && !balanceError && (
-                            <div className="text-center text-gray-500">Aucun certificat trouvé</div>
-                        )}
-                    </div>
-                </CardContent>
-            </Card>
+            <CertificateDisplay certificateNumber={certificateCount > 0n ? certificateCount - 1n : 0n} />
         </div>
     )
 }
