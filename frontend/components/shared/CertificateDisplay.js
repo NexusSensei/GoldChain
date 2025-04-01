@@ -65,11 +65,11 @@ const CertificateDisplay = ({ certificateNumber }) => {
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="border-b border-gray-200 pb-2">
                                         <div className="text-sm text-gray-600">Matériau</div>
-                                        <div className="font-medium">{EnumConverter.getMaterialLabel(certificateDetails.materials[0])}</div>
+                                        <div className="font-medium">{EnumConverter.getMaterialLabel(certificateDetails.materials) + '000'}</div>
                                     </div>
                                     <div className="border-b border-gray-200 pb-2">
                                         <div className="text-sm text-gray-600">Pierre précieuse</div>
-                                        <div className="font-medium">{EnumConverter.getGemstoneLabel(certificateDetails.gemStones[0])}</div>
+                                        <div className="font-medium">{EnumConverter.getGemstoneLabel(certificateDetails.gemStones)}</div>
                                     </div>
                                 </div>
 
@@ -79,7 +79,7 @@ const CertificateDisplay = ({ certificateNumber }) => {
                                         <div className="font-medium">{certificateDetails.weightInGrams} grammes</div>
                                     </div>
                                     <div className="border-b border-gray-200 pb-2">
-                                        <div className="text-sm text-gray-600">Couleur</div>
+                                        <div className="text-sm text-gray-600">Description</div>
                                         <div className="font-medium">{certificateDetails.mainColor}</div>
                                     </div>
                                 </div>

@@ -79,11 +79,11 @@ const ConsultCertificate = () => {
                                         <div className="grid grid-cols-2 gap-4">
                                             <div className="border-b border-gray-200 pb-2">
                                                 <div className="text-sm text-gray-600">Matériau</div>
-                                                <div className="font-medium">{EnumConverter.getMaterialLabel(certificateDetails.materials[0])}</div>
+                                                <div className="font-medium">{EnumConverter.getMaterialLabel(certificateDetails.materials)}</div>
                                             </div>
                                             <div className="border-b border-gray-200 pb-2">
                                                 <div className="text-sm text-gray-600">Pierre précieuse</div>
-                                                <div className="font-medium">{EnumConverter.getGemstoneLabel(certificateDetails.gemStones[0])}</div>
+                                                <div className="font-medium">{EnumConverter.getGemstoneLabel(certificateDetails.gemStones)}</div>
                                             </div>
                                         </div>
 

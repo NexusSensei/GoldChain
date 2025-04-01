@@ -221,12 +221,19 @@ contract GoldChain is AccessControl, GoldChainERC721 {
         ));
     }
 
-    function genSVG(uint _Id) internal pure returns (string memory) {
+    function genSVG(uint _Id) internal view returns (string memory) {
+        IDataStorage.Certificate memory cert = dataStorage.getOneCertificate(_Id); 
         string memory output = string(abi.encodePacked(
             GoldChainConstants.SVG_HEADER,
             GoldChainConstants.SVG_BACKGROUND,
             GoldChainConstants.SVG_TITLE_START,
             GoldChainConstants.SVG_TITLE_TEXT,
+            GoldChainConstants.SVG_TITLE_END
+        ));
+        output = string(abi.encodePacked(
+            output,
+            GoldChainConstants.SVG_TITLE_2,
+            cert.mainColor,
             GoldChainConstants.SVG_TITLE_END
         ));
         output = string(abi.encodePacked(
@@ -241,18 +248,18 @@ contract GoldChain is AccessControl, GoldChainERC721 {
             GoldChainConstants.SVG_DIAMOND_3,
             GoldChainConstants.SVG_DIAMOND_4,
             GoldChainConstants.SVG_BRAND_START,
-            GoldChainConstants.SVG_BRAND_TEXT
+            cert.JewelerName
         ));
         output = string(abi.encodePacked(
             output,
-            GoldChainConstants.SVG_BRAND_END,
+            GoldChainConstants.SVG_TITLE_END,
             GoldChainConstants.SVG_FRAME,
             GoldChainConstants.SVG_NUMBER_START
         ));
         return string(abi.encodePacked(
-            output,
-            GoldChainConstants.SVG_BRAND_END,
+            output,            
             Strings.toString(_Id),
+            GoldChainConstants.SVG_TITLE_END,
             GoldChainConstants.SVG_END
         ));
     }

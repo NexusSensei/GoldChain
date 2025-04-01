@@ -600,14 +600,14 @@ export const CONTRACT_ABI=[
   {
     "inputs": [
       {
-        "internalType": "uint8[]",
+        "internalType": "uint8",
         "name": "_materials",
-        "type": "uint8[]"
+        "type": "uint8"
       },
       {
-        "internalType": "uint8[]",
+        "internalType": "uint8",
         "name": "_gemStones",
-        "type": "uint8[]"
+        "type": "uint8"
       },
       {
         "internalType": "uint8",
@@ -791,14 +791,14 @@ export const CONTRACT_ABI=[
             "type": "uint256"
           },
           {
-            "internalType": "uint8[]",
+            "internalType": "uint8",
             "name": "materials",
-            "type": "uint8[]"
+            "type": "uint8"
           },
           {
-            "internalType": "uint8[]",
+            "internalType": "uint8",
             "name": "gemStones",
-            "type": "uint8[]"
+            "type": "uint8"
           },
           {
             "internalType": "uint8",
