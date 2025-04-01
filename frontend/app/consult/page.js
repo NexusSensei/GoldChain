@@ -1,17 +1,124 @@
+'use client'
+
+import { useState } from "react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { useCertificate } from "@/hooks/useCertificate";
+import { EnumConverter } from "@/utils/enumConverter";
+import { formatEVMDate } from "@/utils/dateUtils";
+
 const ConsultCertificate = () => {
+    const [certificateId, setCertificateId] = useState("");
+    const [searchId, setSearchId] = useState(null);
+    
+    const {
+        certificateDetails,
+        detailsError,
+        refetchDetails
+    } = useCertificate(searchId ? BigInt(searchId) : null);
+
+    const handleSearch = () => {
+        if (certificateId) {
+            setSearchId(certificateId);
+        }
+    };
+
     return (
-      <>
-        <div>
-          <div className="flex justify-center items-center">
-              <h1 className="text-4xl font-bold text-center bg-gold-gradient text-transparent bg-clip-text drop-shadow-gold [text-shadow:var(--tw-shadow)]">
-              Consulter certificat
-              </h1>
-          </div>
+        <div className="flex flex-col items-center min-h-[80vh] p-4 gap-4">
+            <div>
+                <h1 className="text-4xl font-bold text-center bg-gold-gradient text-transparent bg-clip-text drop-shadow-gold [text-shadow:var(--tw-shadow)]">
+                    Consulter certificat
+                </h1>
+            </div>
+
+            <Card className="w-[600px]">
+                <CardHeader>
+                    <CardTitle>Rechercher un certificat</CardTitle>
+                    <CardDescription>
+                        Entrez le numéro du certificat à consulter
+                    </CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <div className="flex gap-4">
+                        <Input
+                            type="number"
+                            placeholder="Numéro du certificat"
+                            value={certificateId}
+                            onChange={(e) => setCertificateId(e.target.value)}
+                            className="flex-1"
+                        />
+                        <Button 
+                            onClick={handleSearch}
+                            className="bg-[#d4af37] hover:bg-[#b38f2f] text-white"
+                        >
+                            Rechercher
+                        </Button>
+                    </div>
+                </CardContent>
+            </Card>
+
+            {searchId && (
+                <Card className="w-[600px]">
+                    <CardHeader>
+                        <CardTitle>Détails du certificat</CardTitle>
+                        <CardDescription>
+                            Certificat #{searchId}
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="flex flex-col gap-4">
+                            {detailsError && (
+                                <div className="text-red-500">
+                                    Erreur lors de la lecture des détails du certificat: {detailsError.message}
+                                </div>
+                            )}
+                            {certificateDetails && (
+                                <div className="border-2 border-[#d4af37] rounded-lg p-8 bg-white shadow-lg">
+                                    <div className="space-y-4">
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <div className="border-b border-gray-200 pb-2">
+                                                <div className="text-sm text-gray-600">Matériau</div>
+                                                <div className="font-medium">{EnumConverter.getMaterialLabel(certificateDetails.materials[0])}</div>
+                                            </div>
+                                            <div className="border-b border-gray-200 pb-2">
+                                                <div className="text-sm text-gray-600">Pierre précieuse</div>
+                                                <div className="font-medium">{EnumConverter.getGemstoneLabel(certificateDetails.gemStones[0])}</div>
+                                            </div>
+                                        </div>
+
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <div className="border-b border-gray-200 pb-2">
+                                                <div className="text-sm text-gray-600">Poids</div>
+                                                <div className="font-medium">{certificateDetails.weightInGrams} grammes</div>
+                                            </div>
+                                            <div className="border-b border-gray-200 pb-2">
+                                                <div className="text-sm text-gray-600">Couleur</div>
+                                                <div className="font-medium">{certificateDetails.mainColor}</div>
+                                            </div>
+                                        </div>
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <div className="border-b border-gray-200 pb-2">
+                                                <div className="text-sm text-gray-600">Niveau de certification</div>
+                                                <div className="font-medium">{EnumConverter.getCertificateLevelLabel(certificateDetails.level)}</div>
+                                            </div>
+                                            <div className="border-b border-gray-200 pb-2">
+                                                <div className="text-sm text-gray-600">Date de création</div>
+                                                <div className="font-medium">{formatEVMDate(certificateDetails.creationDate)}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                            {!certificateDetails && !detailsError && (
+                                <div className="text-center text-gray-500">Certificat non trouvé</div>
+                            )}
+                        </div>
+                    </CardContent>
+                </Card>
+            )}
         </div>
-        <img width={300} id="d" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAwIiBoZWlnaHQ9IjgwMCIgdmlld0JveD0iMCAwIDgwMCA4MDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+DQogIDxyZWN0IHg9IjAiIHk9IjAiIHdpZHRoPSI4MDAiIGhlaWdodD0iODAwIiBmaWxsPSIjZjhmOWZhIiBzdHJva2U9IiNkNGFmMzciIHN0cm9rZS13aWR0aD0iMTAiIHJ4PSIyMCIgcnk9IjIwIi8+DQogIDx0ZXh0IHg9IjUwJSIgeT0iMTIwIiBmb250LXNpemU9IjUwIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtd2VpZ2h0PSJib2xkIiBmaWxsPSIjMzMzIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj4NCiAgICBDZXJ0aWZpY2F0IE5GVCBkZSBCaWpvdQ0KICA8L3RleHQ+DQogIDxlbGxpcHNlIGN4PSI0MDAiIGN5PSI0MjAiIHJ4PSIxODAiIHJ5PSIxMDAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2Q0YWYzNyIgc3Ryb2tlLXdpZHRoPSIyMCIvPg0KICA8ZWxsaXBzZSBjeD0iNDAwIiBjeT0iNDIwIiByeD0iMTQwIiByeT0iODAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2Y4ZjlmYSIgc3Ryb2tlLXdpZHRoPSIyMCIvPiANCiAgPHBvbHlnb24gcG9pbnRzPSI0MDAsMjUwIDQ3MCwzMDAgNDcwLDM4MCA0MDAsNDMwIDMzMCwzODAgMzMwLDMwMCIgDQogICAgICAgICAgIGZpbGw9IndoaXRlIiBzdHJva2U9IiM4YTZmMzAiIHN0cm9rZS13aWR0aD0iNSIvPg0KICA8bGluZSB4MT0iNDAwIiB5MT0iMjUwIiB4Mj0iNDAwIiB5Mj0iNDMwIiBzdHJva2U9IiM4YTZmMzAiIHN0cm9rZS13aWR0aD0iMyIvPg0KICA8bGluZSB4MT0iMzMwIiB5MT0iMzAwIiB4Mj0iNDcwIiB5Mj0iMzgwIiBzdHJva2U9IiM4YTZmMzAiIHN0cm9rZS13aWR0aD0iMyIvPg0KICA8bGluZSB4MT0iNDcwIiB5MT0iMzAwIiB4Mj0iMzMwIiB5Mj0iMzgwIiBzdHJva2U9IiM4YTZmMzAiIHN0cm9rZS13aWR0aD0iMyIvPg0KICA8dGV4dCB4PSI1MCUiIHk9IjYwMCIgZm9udC1zaXplPSI0MCIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXdlaWdodD0iYm9sZCIgZmlsbD0iI2Q0YWYzNyIgdGV4dC1hbmNob3I9Im1pZGRsZSI+DQogICAgR29sZENoYWluDQogIDwvdGV4dD4NCiAgPHJlY3QgeD0iMjAwIiB5PSI2NTAiIHdpZHRoPSI0MDAiIGhlaWdodD0iODAiIGZpbGw9IndoaXRlIiBzdHJva2U9IiMzMzMiIHN0cm9rZS13aWR0aD0iMyIgcng9IjEwIiByeT0iMTAiLz4NCiAgPHRleHQgeD0iNTAlIiB5PSI3MDAiIGZvbnQtc2l6ZT0iMzAiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZmlsbD0iIzMzMyIgdGV4dC1hbmNob3I9Im1pZGRsZSI+DQogICAgMDAwMDAwMDAwMQ0KICA8L3RleHQ+DQo8L3N2Zz4="></img>
-      </>
-      
-    )
-  }
-  
-  export default ConsultCertificate
+    );
+};
+
+export default ConsultCertificate;
