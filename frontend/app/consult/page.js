@@ -1,29 +1,33 @@
 'use client'
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useCertificate } from "@/hooks/useCertificate";
-import { EnumConverter } from "@/utils/enumConverter";
-import { formatEVMDate } from "@/utils/dateUtils";
 import NFTDisplay from "@/components/shared/NFTDisplay";
+import CertificateDisplay from "@/components/shared/CertificateDisplay";
+import { useSearchParams } from "next/navigation";
 
 const ConsultCertificate = () => {
+    const searchParams = useSearchParams();
     const [certificateId, setCertificateId] = useState("");
     const [searchId, setSearchId] = useState(null);
     
-    const {
-        certificateDetails,
-        detailsError,
-        refetchDetails
-    } = useCertificate(searchId ? BigInt(searchId) : null);
-
-    const handleSearch = () => {
-        if (certificateId) {
-            setSearchId(certificateId);
+    // Fonction pour lancer la recherche
+    const handleSearch = (id = certificateId) => {
+        if (id) {
+            setSearchId(id);
         }
     };
+
+    // Effet pour vérifier si un ID est présent dans l'URL
+    useEffect(() => {
+        const idFromUrl = searchParams.get('id');
+        if (idFromUrl) {
+            setCertificateId(idFromUrl);
+            handleSearch(idFromUrl);
+        }
+    }, [searchParams]);
 
     return (
         <div className="flex flex-col items-center min-h-[80vh] p-4 gap-8">
@@ -50,7 +54,7 @@ const ConsultCertificate = () => {
                             className="flex-1"
                         />
                         <Button 
-                            onClick={handleSearch}
+                            onClick={() => handleSearch()}
                             className="bg-[#d4af37] hover:bg-[#b38f2f] text-white"
                         >
                             Rechercher
@@ -60,63 +64,11 @@ const ConsultCertificate = () => {
             </Card>
 
             {searchId && (
-                <Card className="w-[600px]">
-                    <CardHeader>
-                        <CardTitle>Détails du certificat</CardTitle>
-                        <CardDescription>
-                            Certificat #{searchId}
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="flex flex-col gap-4">
-                            {detailsError && (
-                                <div className="text-red-500">
-                                    Erreur lors de la lecture des détails du certificat: {detailsError.message}
-                                </div>
-                            )}
-                            {certificateDetails && (
-                                <div className="border-2 border-[#d4af37] rounded-lg p-8 bg-white shadow-lg">
-                                    <div className="space-y-4">
-                                        <div className="grid grid-cols-2 gap-4">
-                                            <div className="border-b border-gray-200 pb-2">
-                                                <div className="text-sm text-gray-600">Matériau</div>
-                                                <div className="font-medium">{EnumConverter.getMaterialLabel(certificateDetails.materials)}</div>
-                                            </div>
-                                            <div className="border-b border-gray-200 pb-2">
-                                                <div className="text-sm text-gray-600">Pierre précieuse</div>
-                                                <div className="font-medium">{EnumConverter.getGemstoneLabel(certificateDetails.gemStones)}</div>
-                                            </div>
-                                        </div>
-
-                                        <div className="grid grid-cols-2 gap-4">
-                                            <div className="border-b border-gray-200 pb-2">
-                                                <div className="text-sm text-gray-600">Poids</div>
-                                                <div className="font-medium">{certificateDetails.weightInGrams} grammes</div>
-                                            </div>
-                                            <div className="border-b border-gray-200 pb-2">
-                                                <div className="text-sm text-gray-600">Couleur</div>
-                                                <div className="font-medium">{certificateDetails.mainColor}</div>
-                                            </div>
-                                        </div>
-                                        <div className="grid grid-cols-2 gap-4">
-                                            <div className="border-b border-gray-200 pb-2">
-                                                <div className="text-sm text-gray-600">Niveau de certification</div>
-                                                <div className="font-medium">{EnumConverter.getCertificateLevelLabel(certificateDetails.level)}</div>
-                                            </div>
-                                            <div className="border-b border-gray-200 pb-2">
-                                                <div className="text-sm text-gray-600">Date de création</div>
-                                                <div className="font-medium">{formatEVMDate(certificateDetails.creationDate)}</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            )}
-                            {!certificateDetails && !detailsError && (
-                                <div className="text-center text-gray-500">Certificat non trouvé</div>
-                            )}
-                        </div>
-                    </CardContent>
-                </Card>
+                <CertificateDisplay 
+                    certificateNumber={BigInt(searchId)} 
+                    title="Détails du certificat"
+                    description=""
+                />
             )}
 
             <div className="w-full flex justify-center mt-8">

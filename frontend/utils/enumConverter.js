@@ -26,6 +26,14 @@ export class EnumConverter {
         "3": "Puce RFID"
     };
 
+    static CERTIFICATE_STATUS = {
+        "0": "Créé",
+        "1": "Transféré 1 fois",
+        "2": "Transféré 2 fois ou plus",
+        "3": "Perdu",
+        "4": "Volé"
+    };
+
     static getMaterialLabel(value) {
         return this.MATERIALS[value] || "Inconnu";
     }
@@ -36,5 +44,9 @@ export class EnumConverter {
 
     static getCertificateLevelLabel(value) {
         return this.CERTIFICATE_LEVELS[value] || "Inconnu";
+    }
+
+    static getCertificateStatusLabel(value) {
+        return this.CERTIFICATE_STATUS[value] || "Inconnu";
     }
 } 

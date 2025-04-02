@@ -8,7 +8,11 @@ import { useUserCertificate } from "@/hooks/useUserCertificate";
 import { useAccount } from "wagmi";
 import { useEffect, useState } from "react";
 
-const CertificateDisplay = ({ certificateNumber }) => {
+const CertificateDisplay = ({ 
+    certificateNumber, 
+    title = "Vos certificats", 
+    description = "votre dernier certificat :" 
+}) => {
     const { address } = useAccount();
     const [isMounted, setIsMounted] = useState(false);
     
@@ -33,9 +37,9 @@ const CertificateDisplay = ({ certificateNumber }) => {
     return (
         <Card className="w-[600px]">
             <CardHeader>
-                <CardTitle>Vos certificats</CardTitle>
+                <CardTitle>{title}</CardTitle>
                 <CardDescription>
-                    Voir votre dernier certificat
+                    {description}
                 </CardDescription>
             </CardHeader>
             <CardContent>
@@ -91,6 +95,16 @@ const CertificateDisplay = ({ certificateNumber }) => {
                                     <div className="border-b border-gray-200 pb-2">
                                         <div className="text-sm text-gray-600">Date de création</div>
                                         <div className="font-medium">{formatEVMDate(certificateDetails.creationDate)}</div>
+                                    </div>
+                                </div>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="border-b border-gray-200 pb-2">
+                                        <div className="text-sm text-gray-600">Statut du certificat</div>
+                                        <div className="font-medium">{EnumConverter.getCertificateStatusLabel(certificateDetails.status)}</div>
+                                    </div>
+                                    <div className="border-b border-gray-200 pb-2">
+                                        <div className="text-sm text-gray-600">Date de dernière modification</div>
+                                        <div className="font-medium">{formatEVMDate(certificateDetails.updated_at)}</div>
                                     </div>
                                 </div>
                             </div>
