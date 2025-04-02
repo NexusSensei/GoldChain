@@ -4,8 +4,8 @@ import { useUserProfile } from "@/components/contexts/userContext"
 import { useAccount } from "wagmi"
 import NotConnected from "@/components/shared/NotConnected"
 import AddProfile from "@/components/profile/AddProfile"
-import Customer from "@/components/profile/customer"
-import Jeweler from "@/components/profile/jeweler"
+import Customer from "@/components/profile/CustomerProfile"
+import Jeweler from "@/components/profile/JewelerProfile"
 import Admin from "@/components/profile/Admin"
 
 const MyProfile = () => {
