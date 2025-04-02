@@ -210,7 +210,8 @@ import "@openzeppelin/contracts/access/Ownable.sol";
         return true;
     }
 
-    function updateCertificate() external returns (bool) {
+    function updateCertificateStatus(uint _certificateId, CertificateStatus _status) external returns (bool) {
+        certificates[_certificateId].status = _status;
         return true;
     }
 

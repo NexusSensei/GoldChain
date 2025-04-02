@@ -131,7 +131,7 @@ pragma solidity 0.8.28;
 
     function desactivateJeweler(address _jewelerAddress) external returns (bool);
 
-    function updateCertificate() external returns (bool);
+    function updateCertificateStatus(uint _certificateId, CertificateStatus _status) external returns (bool);
 
     function getOneJeweler(address _jewelerAddress) external view returns(Jeweler memory);
 

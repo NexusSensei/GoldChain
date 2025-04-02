@@ -204,6 +204,111 @@ describe("testing GoldChain", function () {
       console.log(cert);
       expect(cert.JewelerName).to.equal("jeweler1");
     });
+
+    it("should create a certificate whith correct material", async function () {
+      const { goldChain, jeweler1 } = await loadFixture(deployGoldChainFixture);
+      await goldChain.connect(jeweler1).createJeweler(JEWELER1NAME, JEWELER1EMAIL, JEWELER1LOCATION);
+      await goldChain.connect(jeweler1).createCertificate(1, 0, 8, "alliance", 0, "jeweler1", 0);
+      let cert = await goldChain.getOneCertificate(0);
+      console.log("cert.JewelerName", cert.jewelerName);
+      console.log(cert);
+      expect(cert.materials).to.equal(1);
+    });
+
+    it("should create a certificate whith correct gemstone", async function () {
+      const { goldChain, jeweler1 } = await loadFixture(deployGoldChainFixture);
+      await goldChain.connect(jeweler1).createJeweler(JEWELER1NAME, JEWELER1EMAIL, JEWELER1LOCATION);
+      await goldChain.connect(jeweler1).createCertificate(0, 2, 8, "alliance", 0, "jeweler1", 0);
+      let cert = await goldChain.getOneCertificate(0);
+      expect(cert.gemStones).to.equal(2);
+    });
+
+    it("should create a certificate whith correct weight", async function () {
+      const { goldChain, jeweler1 } = await loadFixture(deployGoldChainFixture);
+      await goldChain.connect(jeweler1).createJeweler(JEWELER1NAME, JEWELER1EMAIL, JEWELER1LOCATION);
+      await goldChain.connect(jeweler1).createCertificate(0, 0, 8, "alliance", 0, "jeweler1", 0);
+      let cert = await goldChain.getOneCertificate(0);
+      expect(cert.weightInGrams).to.equal(8);
+    });
+
+    it("should create a certificate whith correct description", async function () {
+      const { goldChain, jeweler1 } = await loadFixture(deployGoldChainFixture);
+      await goldChain.connect(jeweler1).createJeweler(JEWELER1NAME, JEWELER1EMAIL, JEWELER1LOCATION);
+      await goldChain.connect(jeweler1).createCertificate(0, 0, 8, "alliance", 0, "jeweler1", 0);
+      let cert = await goldChain.getOneCertificate(0);
+      expect(cert.mainColor).to.equal("alliance");
+    });
+
+    it("should create a certificate whith correct certificate level", async function () {
+      const { goldChain, jeweler1 } = await loadFixture(deployGoldChainFixture);
+      await goldChain.connect(jeweler1).createJeweler(JEWELER1NAME, JEWELER1EMAIL, JEWELER1LOCATION);
+      await goldChain.connect(jeweler1).createCertificate(0, 0, 8, "alliance", 1, "jeweler1", 0);
+      let cert = await goldChain.getOneCertificate(0);
+      expect(cert.level).to.equal(1);
+    });
+
+    it("should create a certificate whith correct certificate status", async function () {
+      const { goldChain, jeweler1 } = await loadFixture(deployGoldChainFixture);
+      await goldChain.connect(jeweler1).createJeweler(JEWELER1NAME, JEWELER1EMAIL, JEWELER1LOCATION);
+      await goldChain.connect(jeweler1).createCertificate(0, 0, 8, "alliance", 1, "jeweler1", 1);
+      let cert = await goldChain.getOneCertificate(0);
+      expect(cert.status).to.equal(1);
+    });
+    
+    it("should update a certificate status", async function () {
+      const { goldChain, jeweler1 } = await loadFixture(deployGoldChainFixture);
+      await goldChain.connect(jeweler1).createJeweler(JEWELER1NAME, JEWELER1EMAIL, JEWELER1LOCATION);
+      await goldChain.connect(jeweler1).createCertificate(0, 0, 8, "alliance", 0, "jeweler1", 0);
+      await goldChain.connect(jeweler1).updateCertificateStatus(0, 3);
+      let cert = await goldChain.getOneCertificate(0);
+      expect(cert.status).to.equal(3);
+    });
+
+    it("should not update a certificate status if not exists", async function () {
+      const { goldChain, jeweler1 } = await loadFixture(deployGoldChainFixture);
+      await goldChain.connect(jeweler1).createJeweler(JEWELER1NAME, JEWELER1EMAIL, JEWELER1LOCATION);
+      await goldChain.connect(jeweler1).createCertificate(0, 0, 8, "alliance", 0, "jeweler1", 0);
+      await expect(goldChain.connect(jeweler1).updateCertificateStatus(1, 3)).to.be.revertedWithCustomError(
+        goldChain,
+        "ERC721NonexistentToken"
+      );
+    });
+
+    it("should not update a certificate status if not owner", async function () {
+      const { goldChain, jeweler1, jeweler2 } = await loadFixture(deployGoldChainFixture);
+      await goldChain.connect(jeweler1).createJeweler(JEWELER1NAME, JEWELER1EMAIL, JEWELER1LOCATION);
+      await goldChain.connect(jeweler2).createJeweler(JEWELER2NAME, JEWELER2EMAIL, JEWELER2LOCATION);
+      await goldChain.connect(jeweler1).createCertificate(0, 0, 8, "alliance", 0, "jeweler1", 0);
+      await expect(goldChain.connect(jeweler2).updateCertificateStatus(0, 3)).to.be.revertedWithCustomError(
+        goldChain,
+        "NotOwner"
+      );
+    });
+
+    it("should transfert a certificate to a new owner", async function () {
+      const { goldChain, jeweler1, customer1 } = await loadFixture(deployGoldChainFixture);
+      await goldChain.connect(jeweler1).createJeweler(JEWELER1NAME, JEWELER1EMAIL, JEWELER1LOCATION);
+      await goldChain.connect(customer1).createCustomer(CUSTOMER1NAME, CUSTOMER1EMAIL, CUSTOMER1LOCATION);
+      await goldChain.connect(jeweler1).createCertificate(0, 0, 8, "alliance", 0, "jeweler1", 0);
+      let certOwner = await goldChain.ownerOf(0);
+      console.log("cert.owner", certOwner);
+      await goldChain.connect(jeweler1).safeTransferFrom(jeweler1.address, customer1.address, 0);
+      certOwner = await goldChain.ownerOf(0);
+      console.log("New cert.owner", certOwner);
+      expect(certOwner).to.equal(customer1.address);
+    });
+
+    it("should not transfert a certificate to a new owner if not authorized", async function () {
+      const { goldChain, jeweler1, customer1, customer2 } = await loadFixture(deployGoldChainFixture);
+      await goldChain.connect(jeweler1).createJeweler(JEWELER1NAME, JEWELER1EMAIL, JEWELER1LOCATION);
+      await goldChain.connect(customer1).createCustomer(CUSTOMER1NAME, CUSTOMER1EMAIL, CUSTOMER1LOCATION);
+      await goldChain.connect(customer2).createCustomer(CUSTOMER2NAME, CUSTOMER2EMAIL, CUSTOMER2LOCATION);
+      await goldChain.connect(jeweler1).createCertificate(0, 0, 8, "alliance", 0, "jeweler1", 0);
+      await expect(goldChain.connect(customer2).safeTransferFrom(jeweler1.address, customer1.address, 0)).to.be.revertedWithCustomError(
+        goldChain,
+        "ERC721InsufficientApproval"
+      );
+    });
   });
 
 

@@ -75,9 +75,17 @@ contract GoldChain is AccessControl, GoldChainERC721 {
     error JewelerNotExists();
     /// @notice the token does not exist
     error TokenDoesNotExist();
+    /// @notice the owner is not the owner of the certificate
+    error NotOwner();
 
     /* ::::::::::::::: MODIFIERS :::::::::::::::::: */
 
+    modifier onlyOwner(uint _certificateId) {
+        if (ownerOf(_certificateId) != msg.sender) {
+            revert NotOwner();
+        }
+        _;
+    }
     /* ::::::::::::::: FUNCTIONS :::::::::::::::::: */
 
     function createCustomer(
@@ -152,7 +160,8 @@ contract GoldChain is AccessControl, GoldChainERC721 {
         return true;
     }
 
-    function updateCertificate() external returns (bool) {
+    function updateCertificateStatus(uint _certificateId, IDataStorage.CertificateStatus _status) external onlyOwner(_certificateId) returns (bool) {
+        dataStorage.updateCertificateStatus(_certificateId, _status);
         return true;
     }
 
@@ -277,6 +286,8 @@ contract GoldChain is AccessControl, GoldChainERC721 {
             ))))
         ));
     }
+
+
 
     function supportsInterface(bytes4 interfaceId)
         public

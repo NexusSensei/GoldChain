@@ -89,7 +89,7 @@ contract GoldChainERC721 is ERC721, ERC721Enumerable {
     // The following functions are overrides required by Solidity.
 
      function _update(address to, uint256 tokenId, address auth)
-        internal
+        internal        
         override(ERC721, ERC721Enumerable)
         returns (address)
     {
