@@ -8,9 +8,9 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { EnumConverter } from "@/utils/enumConverter";
 
-const NFTDisplay = () => {
+const NFTDisplay = ({ searchId: initialSearchId }) => {
     const [nftId, setNftId] = useState("");
-    const [searchId, setSearchId] = useState(null);
+    const [searchId, setSearchId] = useState(initialSearchId || null);
 
     // Lecture du tokenURI
     const {
@@ -22,6 +22,19 @@ const NFTDisplay = () => {
         address: CONTRACT_ADDRESS,
         abi: CONTRACT_ABI,
         functionName: 'tokenURI',
+        args: searchId !== null ? [BigInt(searchId)] : undefined,
+        enabled: searchId !== null && searchId !== ""  // Ne s'exécute que si searchId est défini et non vide
+    });
+
+    // Lecture de l'adresse du propriétaire
+    const {
+        data: ownerAddress,
+        error: ownerError,
+        isLoading: isLoadingOwner
+    } = useReadContract({
+        address: CONTRACT_ADDRESS,
+        abi: CONTRACT_ABI,
+        functionName: 'ownerOf',
         args: searchId !== null ? [BigInt(searchId)] : undefined,
         enabled: searchId !== null && searchId !== ""  // Ne s'exécute que si searchId est défini et non vide
     });
@@ -77,10 +90,23 @@ const NFTDisplay = () => {
         }
     }, [tokenURI]);
 
+    // Mise à jour de searchId quand initialSearchId change
+    useEffect(() => {
+        if (initialSearchId) {
+            setSearchId(initialSearchId);
+        }
+    }, [initialSearchId]);
+
     const handleSearch = () => {
         if (nftId) {
             setSearchId(nftId);
         }
+    };
+
+    // Fonction pour formater l'adresse du propriétaire
+    const formatAddress = (address) => {
+        if (!address) return "";
+        return `${address.slice(0, 6)}...${address.slice(-4)}`;
     };
 
     return (
@@ -88,39 +114,41 @@ const NFTDisplay = () => {
             <CardHeader>
                 <CardTitle>Rechercher un NFT</CardTitle>
                 <CardDescription>
-                    Entrez le numéro du NFT à consulter
+                    {initialSearchId ? "Détails du NFT" : "Entrez le numéro du NFT à consulter"}
                 </CardDescription>
             </CardHeader>
             <CardContent>
                 <div className="flex flex-col gap-8">
-                    {/* Zone de recherche */}
-                    <div className="flex gap-4">
-                        <Input
-                            type="number"
-                            placeholder="Numéro du NFT"
-                            value={nftId}
-                            onChange={(e) => setNftId(e.target.value)}
-                            className="flex-1"
-                        />
-                        <Button 
-                            onClick={handleSearch}
-                            className="bg-[#d4af37] hover:bg-[#b38f2f] text-white"
-                        >
-                            Rechercher
-                        </Button>
-                    </div>
+                    {/* Zone de recherche - n'apparaît que si aucun initialSearchId n'est fourni */}
+                    {!initialSearchId && (
+                        <div className="flex gap-4">
+                            <Input
+                                type="number"
+                                placeholder="Numéro du NFT"
+                                value={nftId}
+                                onChange={(e) => setNftId(e.target.value)}
+                                className="flex-1"
+                            />
+                            <Button 
+                                onClick={handleSearch}
+                                className="bg-[#d4af37] hover:bg-[#b38f2f] text-white"
+                            >
+                                Rechercher
+                            </Button>
+                        </div>
+                    )}
 
                     {/* État de chargement - n'affiche que pendant une recherche active */}
-                    {isLoadingToken && searchId && (
+                    {(isLoadingToken || isLoadingOwner) && searchId && (
                         <div className="text-center text-gray-600">
                             Chargement du NFT...
                         </div>
                     )}
 
                     {/* Affichage des erreurs - n'affiche que pendant une recherche active */}
-                    {tokenError && searchId && (
+                    {(tokenError || ownerError) && searchId && (
                         <div className="text-red-500">
-                            Erreur lors de la lecture du NFT: {tokenError.message}
+                            Erreur lors de la lecture du NFT: {tokenError?.message || ownerError?.message}
                         </div>
                     )}
 
@@ -146,6 +174,8 @@ const NFTDisplay = () => {
                                                     <div className="font-medium">{attr.value}</div>
                                                 </div>
                                             ))}
+                                            
+                                            
                                         </div>
                                     </div>
 
@@ -162,11 +192,18 @@ const NFTDisplay = () => {
                                     )}
                                 </div>
                             </div>
+                            {/* Adresse du propriétaire */}
+                            {ownerAddress && (
+                                <div className="border-b border-gray-200 pb-2">
+                                    <div className="text-sm text-gray-600">Propriétaire</div>
+                                    <div className="font-medium">{ownerAddress}</div>
+                                </div>
+                            )}
                         </div>
                     )}
 
                     {/* Message quand aucun NFT n'est trouvé */}
-                    {!metadata && !tokenError && searchId && !isLoadingToken && (
+                    {!metadata && !tokenError && !ownerError && searchId && !isLoadingToken && !isLoadingOwner && (
                         <div className="text-center text-gray-500">NFT non trouvé</div>
                     )}
                 </div>

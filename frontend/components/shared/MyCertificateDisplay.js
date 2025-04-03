@@ -7,7 +7,7 @@ import { useCertificate } from "@/hooks/useCertificate";
 import { useAccount, useReadContract } from "wagmi";
 import { useEffect, useState } from "react";
 import { CONTRACT_ADDRESS, CONTRACT_ABI } from "@/constants";
-
+import { Button } from "@/components/ui/button";
 
 const MyCertificateDisplay = ({      
     title = "Vos certificats", 
@@ -16,6 +16,7 @@ const MyCertificateDisplay = ({
     const { address } = useAccount();
     const [currentCertificate, setCurrentCertificate] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
+    const [currentIndex, setCurrentIndex] = useState(0);
     
     // Lecture du nombre de certificats
     const { 
@@ -30,7 +31,20 @@ const MyCertificateDisplay = ({
         enabled: !!address
     });
 
-    // Récupérer le dernier certificat
+    // Récupérer l'ID du certificat à l'index courant
+    const { 
+        data: currentTokenId,
+        error: tokenIdError,
+        refetch: refetchCurrentTokenId
+    } = useReadContract({
+        address: CONTRACT_ADDRESS,
+        abi: CONTRACT_ABI,
+        functionName: "tokenOfOwnerByIndex",
+        args: [address, BigInt(currentIndex)],
+        enabled: !!certificateCount && certificateCount > 0n && currentIndex >= 0
+    });
+
+    // Récupérer le certificat courant
     const { 
         data: certificateData, 
         error: certificateError, 
@@ -39,15 +53,15 @@ const MyCertificateDisplay = ({
         address: CONTRACT_ADDRESS,
         abi: CONTRACT_ABI,
         functionName: "getOneCertificate",
-        args: [certificateCount ? certificateCount - 1n : 0n],
-        enabled: !!certificateCount && certificateCount > 0n
+        args: [currentTokenId],
+        enabled: !!currentTokenId
     });
 
     // Mettre à jour le certificat courant lorsque les données sont disponibles
     useEffect(() => {
         if (certificateData) {
             setCurrentCertificate({
-                id: certificateCount ? certificateCount - 1n : 0n,
+                id: currentTokenId,
                 details: {
                     materials: certificateData.materials,
                     gemStones: certificateData.gemStones,
@@ -64,15 +78,36 @@ const MyCertificateDisplay = ({
             setCurrentCertificate(null);
             setIsLoading(false);
         }
-    }, [certificateData, certificateCount]);
+    }, [certificateData, certificateCount, currentTokenId]);
+
+    // Réinitialiser l'index quand le nombre de certificats change
+    useEffect(() => {
+        if (certificateCount) {
+            setCurrentIndex(Number(certificateCount) - 1);
+        }
+    }, [certificateCount]);
+
+    const handlePrevious = () => {
+        if (currentIndex > 0) {
+            setCurrentIndex(currentIndex - 1);
+        }
+    };
+
+    const handleNext = () => {
+        if (certificateCount && currentIndex < Number(certificateCount) - 1) {
+            setCurrentIndex(currentIndex + 1);
+        }
+    };
 
     // Log pour déboguer
     useEffect(() => {
         console.log("address:", address);
         console.log("certificateCount:", certificateCount);
+        console.log("currentIndex:", currentIndex);
+        console.log("currentTokenId:", currentTokenId);
         console.log("certificateData:", certificateData);
         console.log("currentCertificate:", currentCertificate);
-    }, [address, certificateCount, certificateData, currentCertificate]);
+    }, [address, certificateCount, currentIndex, currentTokenId, certificateData, currentCertificate]);
 
     return (
         <Card className="w-[600px]">
@@ -90,6 +125,12 @@ const MyCertificateDisplay = ({
                         </div>
                     )}
                     
+                    {tokenIdError && (
+                        <div className="text-red-500">
+                            Erreur lors de la lecture du dernier ID de certificat: {tokenIdError.message}
+                        </div>
+                    )}
+                    
                     {certificateError && (
                         <div className="text-red-500">
                             Erreur lors de la lecture du certificat: {certificateError.message}
@@ -103,55 +144,73 @@ const MyCertificateDisplay = ({
                     ) : !currentCertificate ? (
                         <div className="text-center text-gray-500 py-4">Aucun certificat trouvé</div>
                     ) : (
-                        <div className="border-2 border-[#d4af37] rounded-lg p-8 bg-white shadow-lg">
-                            <div className="text-center mb-8">
-                                <h3 className="text-2xl font-bold text-[#d4af37] mb-2">Numéro de certificat: #{currentCertificate.id.toString()}</h3>                                    
-                            </div>
-                            
-                            <div className="space-y-4">
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div className="border-b border-gray-200 pb-2">
-                                        <div className="text-sm text-gray-600">Matériau</div>
-                                        <div className="font-medium">{EnumConverter.getMaterialLabel(currentCertificate.details.materials)}</div>
-                                    </div>
-                                    <div className="border-b border-gray-200 pb-2">
-                                        <div className="text-sm text-gray-600">Pierre précieuse</div>
-                                        <div className="font-medium">{EnumConverter.getGemstoneLabel(currentCertificate.details.gemStones)}</div>
-                                    </div>
+                        <>
+                            <div className="border-2 border-[#d4af37] rounded-lg p-8 bg-white shadow-lg">
+                                <div className="text-center mb-8">
+                                    <h3 className="text-2xl font-bold text-[#d4af37] mb-2">Numéro de certificat: #{currentCertificate.id.toString()}</h3>                                    
                                 </div>
+                                
+                                <div className="space-y-4">
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="border-b border-gray-200 pb-2">
+                                            <div className="text-sm text-gray-600">Matériau</div>
+                                            <div className="font-medium">{EnumConverter.getMaterialLabel(currentCertificate.details.materials)}</div>
+                                        </div>
+                                        <div className="border-b border-gray-200 pb-2">
+                                            <div className="text-sm text-gray-600">Pierre précieuse</div>
+                                            <div className="font-medium">{EnumConverter.getGemstoneLabel(currentCertificate.details.gemStones)}</div>
+                                        </div>
+                                    </div>
 
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div className="border-b border-gray-200 pb-2">
-                                        <div className="text-sm text-gray-600">Poids</div>
-                                        <div className="font-medium">{currentCertificate.details.weightInGrams} grammes</div>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="border-b border-gray-200 pb-2">
+                                            <div className="text-sm text-gray-600">Poids</div>
+                                            <div className="font-medium">{currentCertificate.details.weightInGrams} grammes</div>
+                                        </div>
+                                        <div className="border-b border-gray-200 pb-2">
+                                            <div className="text-sm text-gray-600">Description</div>
+                                            <div className="font-medium">{currentCertificate.details.mainColor}</div>
+                                        </div>
                                     </div>
-                                    <div className="border-b border-gray-200 pb-2">
-                                        <div className="text-sm text-gray-600">Description</div>
-                                        <div className="font-medium">{currentCertificate.details.mainColor}</div>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="border-b border-gray-200 pb-2">
+                                            <div className="text-sm text-gray-600">Niveau de certification</div>
+                                            <div className="font-medium">{EnumConverter.getCertificateLevelLabel(currentCertificate.details.level)}</div>
+                                        </div>
+                                        <div className="border-b border-gray-200 pb-2">
+                                            <div className="text-sm text-gray-600">Date de création</div>
+                                            <div className="font-medium">{formatEVMDate(currentCertificate.details.creationDate)}</div>
+                                        </div>
                                     </div>
-                                </div>
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div className="border-b border-gray-200 pb-2">
-                                        <div className="text-sm text-gray-600">Niveau de certification</div>
-                                        <div className="font-medium">{EnumConverter.getCertificateLevelLabel(currentCertificate.details.level)}</div>
-                                    </div>
-                                    <div className="border-b border-gray-200 pb-2">
-                                        <div className="text-sm text-gray-600">Date de création</div>
-                                        <div className="font-medium">{formatEVMDate(currentCertificate.details.creationDate)}</div>
-                                    </div>
-                                </div>
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div className="border-b border-gray-200 pb-2">
-                                        <div className="text-sm text-gray-600">Statut du certificat</div>
-                                        <div className="font-medium">{EnumConverter.getCertificateStatusLabel(currentCertificate.details.status)}</div>
-                                    </div>
-                                    <div className="border-b border-gray-200 pb-2">
-                                        <div className="text-sm text-gray-600">Date de dernière modification</div>
-                                        <div className="font-medium">{formatEVMDate(currentCertificate.details.updated_at)}</div>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="border-b border-gray-200 pb-2">
+                                            <div className="text-sm text-gray-600">Statut du certificat</div>
+                                            <div className="font-medium">{EnumConverter.getCertificateStatusLabel(currentCertificate.details.status)}</div>
+                                        </div>
+                                        <div className="border-b border-gray-200 pb-2">
+                                            <div className="text-sm text-gray-600">Date de dernière modification</div>
+                                            <div className="font-medium">{formatEVMDate(currentCertificate.details.updated_at)}</div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                            <div className="flex justify-between mt-4">
+                                <Button 
+                                    onClick={handlePrevious}
+                                    disabled={currentIndex === 0}
+                                    variant="outline"
+                                >
+                                    Précédent
+                                </Button>
+                                <Button 
+                                    onClick={handleNext}
+                                    disabled={certificateCount ? currentIndex >= Number(certificateCount) - 1 : true}
+                                    variant="outline"
+                                >
+                                    Suivant
+                                </Button>
+                            </div>
+                        </>
                     )}
                 </div>
             </CardContent>

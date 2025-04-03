@@ -37,43 +37,11 @@ const ConsultCertificate = () => {
                 </h1>
             </div>
 
-            <Card className="w-[600px]">
-                <CardHeader>
-                    <CardTitle>Rechercher un certificat</CardTitle>
-                    <CardDescription>
-                        Entrez le numéro du certificat à consulter
-                    </CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <div className="flex gap-4">
-                        <Input
-                            type="number"
-                            placeholder="Numéro du certificat"
-                            value={certificateId}
-                            onChange={(e) => setCertificateId(e.target.value)}
-                            className="flex-1"
-                        />
-                        <Button 
-                            onClick={() => handleSearch()}
-                            className="bg-[#d4af37] hover:bg-[#b38f2f] text-white"
-                        >
-                            Rechercher
-                        </Button>
-                    </div>
-                </CardContent>
-            </Card>
-
-            {searchId && (
-                <CertificateDisplay 
-                    certificateNumber={BigInt(searchId)} 
-                    title="Détails du certificat"
-                    description=""
-                />
-            )}
-
-            <div className="w-full flex justify-center mt-8">
+            {searchId ? (
+                <NFTDisplay searchId={searchId} />
+            ) : (
                 <NFTDisplay />
-            </div>
+            )}
         </div>
     );
 };
