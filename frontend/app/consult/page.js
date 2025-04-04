@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import NFTDisplay from "@/components/shared/NFTDisplay";
 import CertificateDisplay from "@/components/shared/CertificateDisplay";
 import { useSearchParams } from "next/navigation";
+import { Suspense } from 'react'
 
 const ConsultCertificate = () => {
     const searchParams = useSearchParams();
@@ -31,17 +32,19 @@ const ConsultCertificate = () => {
 
     return (
         <div className="flex flex-col items-center min-h-[80vh] p-4 gap-8">
-            <div>
-                <h1 className="text-4xl font-bold text-center bg-gold-gradient text-transparent bg-clip-text drop-shadow-gold [text-shadow:var(--tw-shadow)]">
-                    Consulter certificat
-                </h1>
-            </div>
+            <Suspense>
+                <div>
+                    <h1 className="text-4xl font-bold text-center bg-gold-gradient text-transparent bg-clip-text drop-shadow-gold [text-shadow:var(--tw-shadow)]">
+                        Consulter certificat
+                    </h1>
+                </div>
 
-            {searchId ? (
-                <NFTDisplay searchId={searchId} />
-            ) : (
-                <NFTDisplay />
-            )}
+                {searchId ? (
+                    <NFTDisplay searchId={searchId} />
+                ) : (
+                    <NFTDisplay />
+                )}
+            </Suspense>            
         </div>
     );
 };

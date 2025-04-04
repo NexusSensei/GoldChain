@@ -1,25 +1,14 @@
 'use client'
 
 import { useState, useEffect } from "react";
-import { useSearchParams } from "next/navigation";
 import CertificateManager from "@/components/shared/CertificateManager";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
 export default function ManagePage() {
-  const searchParams = useSearchParams();
   const [certificateNumber, setCertificateNumber] = useState("");
   const [searchId, setSearchId] = useState("");
-
-  // Récupérer l'ID du certificat depuis les paramètres de recherche
-  useEffect(() => {
-    const id = searchParams.get("id");
-    if (id) {
-      setSearchId(id);
-      setCertificateNumber(id);
-    }
-  }, [searchParams]);
 
   const handleSearch = () => {
     if (certificateNumber) {
