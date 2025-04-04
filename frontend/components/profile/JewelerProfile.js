@@ -267,7 +267,7 @@ const Jeweler = () => {
                             Visible par tout le monde
                         </label>
                     </div>
-                    {(!available && <div className="text-red-500">Votre profil est actuellement en attente d'activation par un administrateur</div>)}
+                    {(!available && <div className="text-red-500">Votre profil est actuellement en attente de son activation par un administrateur</div>)}
                 </CardContent>
                 <CardFooter className="flex flex-col gap-4">
                     <Button 
