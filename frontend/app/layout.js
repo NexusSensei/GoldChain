@@ -8,6 +8,7 @@ import { CustomerProvider } from "@/components/contexts/customerContext";
 import { JewelerProvider } from "@/components/contexts/jewelerContext";
 import { useUserProfile } from "@/components/contexts/userContext";
 import { useContext } from "react";
+import { Suspense } from "react/cjs/react.development";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -37,7 +38,9 @@ export default function RootLayout({ children }) {
           <UserProvider>
             <JewelerProvider>
               <CustomerProvider>
-                <Layout>{children}</Layout>
+                <Suspense>
+                  <Layout>{children}</Layout>
+                </Suspense>                
               </CustomerProvider>
             </JewelerProvider>            
           </UserProvider>          
