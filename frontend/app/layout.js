@@ -8,7 +8,7 @@ import { CustomerProvider } from "@/components/contexts/customerContext";
 import { JewelerProvider } from "@/components/contexts/jewelerContext";
 import { useUserProfile } from "@/components/contexts/userContext";
 import { useContext } from "react";
-import { Suspense } from "react/cjs/react.development";
+import { Suspense } from "react";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
