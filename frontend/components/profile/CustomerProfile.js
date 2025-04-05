@@ -142,6 +142,7 @@ const Customer = () => {
                     <Button 
                         disabled={isPending} 
                         onClick={handleUpdateCustomer}
+                        className="btn-primary"
                     >
                         {isPending ? 'En cours de mise à jour...' : 'Mettre à jour le profil'}
                     </Button>
@@ -155,10 +156,18 @@ const Customer = () => {
                     )}
                 </CardFooter>
             </Card>
-            <MyCertificateDisplay />
-            <Link href="/manage">
-                <Button>Gérer vos certificats</Button>
-            </Link>
+            <Card className="w-[600px] mx-auto mt-8" >
+                <CardContent className="pt-6">
+                    <div className="flex gap-12 items-center justify-center">
+                        <Link href="/mycertificates">
+                            <Button className="btn-primary">Mes certificats</Button>
+                        </Link>
+                        <Link href="/manage">
+                            <Button className="btn-primary">Transférer un certificat</Button>
+                        </Link>
+                    </div>
+                </CardContent>
+            </Card>
         </div>
     )
 }

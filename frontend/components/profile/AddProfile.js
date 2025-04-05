@@ -117,7 +117,7 @@ const AddProfile = () => {
               </div>
             </CardContent>
             <CardFooter>
-              <Button disabled={isPending} onClick={handleAddClient}> {isPending ? 'En cours de création...' : 'Créer profil client'}</Button>
+              <Button disabled={isPending} onClick={handleAddClient} className="btn-primary"> {isPending ? 'En cours de création...' : 'Créer profil client'}</Button>
               {hash && <div>Transaction Hash: {hash}</div>}
               {isConfirming && <div>Waiting for confirmation...</div>}
               {isConfirmed && <div>Transaction confirmed. { getCustomer() && getUserProfile()  }</div>  }
@@ -150,7 +150,7 @@ const AddProfile = () => {
               </div>
             </CardContent>
             <CardFooter>
-              <Button disabled={isPending} onClick={handleAddJeweler}> {isPending ? 'En cours de création...' : 'Créer profil bijoutier'}</Button>
+              <Button disabled={isPending} onClick={handleAddJeweler} className="btn-primary"> {isPending ? 'En cours de création...' : 'Créer profil bijoutier'}</Button>
               {hash && <div>Transaction Hash: {hash}</div>}
               {isConfirming && <div>Waiting for confirmation...</div>}
               {isConfirmed && <div>Transaction confirmed. { getJeweler() && getUserProfile()  }</div>  }

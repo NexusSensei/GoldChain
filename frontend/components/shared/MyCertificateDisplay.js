@@ -3,7 +3,6 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { EnumConverter } from "@/utils/enumConverter";
 import { formatEVMDate } from "@/utils/dateUtils";
-import { useCertificate } from "@/hooks/useCertificate";
 import { useAccount, useReadContract } from "wagmi";
 import { useEffect, useState } from "react";
 import { CONTRACT_ADDRESS, CONTRACT_ABI } from "@/constants";
@@ -17,11 +16,13 @@ const MyCertificateDisplay = ({
     const [currentCertificate, setCurrentCertificate] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [currentIndex, setCurrentIndex] = useState(0);
+    const [shouldFetch, setShouldFetch] = useState(false);
+    const [statusMessage, setStatusMessage] = useState({ type: "", message: "" });
     
     // Lecture du nombre de certificats
     const { 
         data: certificateCount, 
-        error: balanceError, 
+        error: balanceError,
         refetch: refetchCertificateCount 
     } = useReadContract({
         address: CONTRACT_ADDRESS,
@@ -30,6 +31,17 @@ const MyCertificateDisplay = ({
         args: [address],
         enabled: !!address
     });
+
+    // Contrôle quand on doit faire les appels
+    useEffect(() => {
+        if (certificateCount && certificateCount > 0n) {
+            setShouldFetch(true);
+        } else {
+            setShouldFetch(false);
+            setCurrentCertificate(null);
+            setIsLoading(false);
+        }
+    }, [certificateCount]);
 
     // Récupérer l'ID du certificat à l'index courant
     const { 
@@ -41,20 +53,20 @@ const MyCertificateDisplay = ({
         abi: CONTRACT_ABI,
         functionName: "tokenOfOwnerByIndex",
         args: [address, BigInt(currentIndex)],
-        enabled: !!certificateCount && certificateCount > 0n && currentIndex >= 0
+        enabled: shouldFetch
     });
 
     // Récupérer le certificat courant
     const { 
         data: certificateData, 
-        error: certificateError, 
-        refetch: refetchCertificate 
+        error: certificateError,
+        refetch: refetchCertificate
     } = useReadContract({
         address: CONTRACT_ADDRESS,
         abi: CONTRACT_ABI,
         functionName: "getOneCertificate",
         args: [currentTokenId],
-        enabled: !!currentTokenId
+        enabled: shouldFetch && !!currentTokenId
     });
 
     // Mettre à jour le certificat courant lorsque les données sont disponibles
@@ -74,18 +86,21 @@ const MyCertificateDisplay = ({
                 }
             });
             setIsLoading(false);
-        } else if (certificateCount === 0n || !certificateCount) {
+        } else if (!shouldFetch) {
             setCurrentCertificate(null);
             setIsLoading(false);
         }
-    }, [certificateData, certificateCount, currentTokenId]);
+    }, [certificateData, currentTokenId, shouldFetch]);
 
     // Réinitialiser l'index quand le nombre de certificats change
     useEffect(() => {
-        if (certificateCount) {
+        if (certificateCount && certificateCount > 0n) {
             setCurrentIndex(Number(certificateCount) - 1);
+        } else {
+            setCurrentIndex(0);
         }
     }, [certificateCount]);
+
 
     const handlePrevious = () => {
         if (currentIndex > 0) {
@@ -101,13 +116,10 @@ const MyCertificateDisplay = ({
 
     // Log pour déboguer
     useEffect(() => {
-        console.log("address:", address);
-        console.log("certificateCount:", certificateCount);
-        console.log("currentIndex:", currentIndex);
-        console.log("currentTokenId:", currentTokenId);
-        console.log("certificateData:", certificateData);
-        console.log("currentCertificate:", currentCertificate);
-    }, [address, certificateCount, currentIndex, currentTokenId, certificateData, currentCertificate]);
+        console.log("Debug - shouldFetch:", shouldFetch);
+        console.log("Debug - certificateCount:", certificateCount);
+        console.log("Debug - currentTokenId:", currentTokenId);
+    }, [shouldFetch, certificateCount, currentTokenId]);
 
     return (
         <Card className="w-[600px]">
@@ -125,19 +137,27 @@ const MyCertificateDisplay = ({
                         </div>
                     )}
                     
-                    {tokenIdError && (
+                    {tokenIdError && !tokenIdError.message.includes("ERC721OutOfBoundsIndex") && (
                         <div className="text-red-500">
                             Erreur lors de la lecture du dernier ID de certificat: {tokenIdError.message}
                         </div>
                     )}
                     
-                    {certificateError && (
+                    {certificateError && !certificateError.message.includes("Cannot convert undefined to a BigInt") && (
                         <div className="text-red-500">
                             Erreur lors de la lecture du certificat: {certificateError.message}
                         </div>
                     )}
+
+                    {statusMessage.message && (
+                        <div className={`p-4 rounded-md ${statusMessage.type === "success" ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}`}>
+                            {statusMessage.message}
+                        </div>
+                    )}
                     
-                    {!certificateCount || certificateCount === 0n ? (
+                    {(!certificateCount || certificateCount === 0n || 
+                      (tokenIdError && tokenIdError.message.includes("ERC721OutOfBoundsIndex")) ||
+                      (certificateError && certificateError.message.includes("Cannot convert undefined to a BigInt"))) ? (
                         <div className="text-center text-gray-500 py-4">Aucun certificat trouvé</div>
                     ) : isLoading ? (
                         <div className="text-center py-4">Chargement du certificat...</div>
@@ -199,6 +219,7 @@ const MyCertificateDisplay = ({
                                     onClick={handlePrevious}
                                     disabled={currentIndex === 0}
                                     variant="outline"
+                                    className="btn-primary"
                                 >
                                     Précédent
                                 </Button>
@@ -206,6 +227,7 @@ const MyCertificateDisplay = ({
                                     onClick={handleNext}
                                     disabled={certificateCount ? currentIndex >= Number(certificateCount) - 1 : true}
                                     variant="outline"
+                                    className="btn-primary"
                                 >
                                     Suivant
                                 </Button>

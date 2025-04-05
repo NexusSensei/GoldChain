@@ -16,23 +16,19 @@ import { Label } from "@/components/ui/label"
 import TransactionAlert from "@/components/ui/transaction-alert"
 
 import { useJeweler } from "@/components/contexts/jewelerContext"
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 
 import { CONTRACT_ADDRESS, CONTRACT_ABI } from "@/constants"
 
 import { error, useReadContract, useAccount, useWriteContract, useWaitForTransactionReceipt } from "wagmi";
-import { useUserProfile } from "@/components/contexts/userContext"
 import { Checkbox } from "@/components/ui/checkbox"
 import { ComboboxMaterials } from "@/components/shared/MaterialsComboBox"
 import { ComboboxGemsStones } from "@/components/shared/GemsStonesComboBox"
 import { ComboboxCertificateLevel } from "@/components/shared/CertificateLevelCombobox"
-import { EnumConverter } from "@/utils/enumConverter";
-import { formatEVMDate } from "@/utils/dateUtils";
-import MyCertificateDisplay from "@/components/shared/MyCertificateDisplay";
+
 
 const Jeweler = () => {
     const { jeweler, isLoading, error, getJeweler } = useJeweler();
-    const { getUserProfile } = useUserProfile();
     const { address } = useAccount();
     
     const [jewelerName, setJewelerName] = useState("");
@@ -42,13 +38,6 @@ const Jeweler = () => {
     const [available, setAvailable] = useState(false);
     const [isPending, setIsPending] = useState(false);
     const [showTransactionAlert, setShowTransactionAlert] = useState(false);
-    const [material, setMaterial] = useState("");
-    const [gemstone, setGemstone] = useState("");
-    const [weightInGrams, setWeightInGrams] = useState("");
-    const [jewelerColor, setJewelerColor] = useState("");
-    const [certificateLevel, setCertificateLevel] = useState("");
-    const [firstCertificate, setFirstCertificate] = useState(null);
-    const [jewelerCertificateCount, setJewelerCertificateCount] = useState(0);
 
     // Ajouter un état pour gérer le montage du composant
     const [isMounted, setIsMounted] = useState(false);
@@ -90,85 +79,12 @@ const Jeweler = () => {
         }
     }, [jeweler]);
     
-    useEffect(() => {
-        if (certificateCount) {
-            setJewelerCertificateCount(certificateCount);
-        }
-    }, [certificateCount]);
-
-    useEffect(() => {
-        if (certificateDetails) {
-            setFirstCertificate(certificateDetails);
-        } else {
-            setFirstCertificate(null);
-        }
-    }, [certificateDetails]);
-
-    // Réinitialiser l'état de la transaction quand l'adresse change
-    useEffect(() => {
-        if (address) {
-            setShowTransactionAlert(false);
-        }
-    }, [address]);
 
     const { data: hash, error: writeError, writeContract } = useWriteContract();
     
     const { isLoading: isConfirming, isSuccess: isConfirmed } = useWaitForTransactionReceipt({
         hash
     });
-
-    // Ajouter une référence pour suivre si le rafraîchissement a été effectué
-    const refreshDoneRef = useRef(false);
-
-    // Gérer la confirmation de la transaction
-    useEffect(() => {
-        const refreshData = async () => {
-            if (isConfirmed && !refreshDoneRef.current) {
-                console.log("Transaction confirmée, rafraîchissement des données...");
-                try {
-                    refreshDoneRef.current = true;
-                    
-                    // 1. Mettre à jour le profil
-                    await getJeweler();
-                    await getUserProfile();
-                    
-                    // 2. Mettre à jour le nombre de certificats
-                    await refetchCertificateCount();
-                    
-                    // 3. Mettre à jour le dernier certificat
-                    await refetchLastCertificate();
-                    
-                    // 4. Mettre à jour les détails du certificat
-                    await refetchCertificateDetails();
-                    
-                    console.log("Données mises à jour avec succès");
-                } catch (error) {
-                    console.error("Erreur lors du rafraîchissement des données:", error);
-                }
-            }
-        };
-        refreshData();
-    }, [isConfirmed, getJeweler, getUserProfile, refetchCertificateCount, refetchLastCertificate, refetchCertificateDetails]);
-
-    // Réinitialiser refreshDoneRef quand une nouvelle transaction commence
-    useEffect(() => {
-        if (hash) {
-            refreshDoneRef.current = false;
-        }
-    }, [hash]);
-
-    // Surveiller l'état de la transaction
-    useEffect(() => {
-        if (hash) {
-            console.log("Transaction hash:", hash);
-        }
-        if (isConfirming) {
-            console.log("Transaction en cours de confirmation");
-        }
-        if (isConfirmed) {
-            console.log("Transaction confirmée");
-        }
-    }, [hash, isConfirming, isConfirmed]);
 
     const handleUpdateJeweler = async () => {
         try {
@@ -185,26 +101,6 @@ const Jeweler = () => {
             console.error(error);
         } finally {
             setIsPending(false);
-        }
-    };
-
-    const handleCreateCertificate = async () => {
-        try {
-            setIsPending(true);
-            setShowTransactionAlert(true);
-            console.log("Début de la création du certificat");
-            writeContract({
-                address: CONTRACT_ADDRESS,
-                abi: CONTRACT_ABI,
-                functionName: "createCertificate",
-                args: [[parseInt(material)], [parseInt(gemstone)], weightInGrams, jewelerColor, [parseInt(certificateLevel)], jewelerName, 0],
-                account: address
-            });
-        } catch (error) {
-            console.error("Erreur lors de la création du certificat:", error);
-        } finally {
-            setIsPending(false);
-            // Réinitialiser les champs du formulaire
         }
     };
 
@@ -273,6 +169,7 @@ const Jeweler = () => {
                     <Button 
                         disabled={isPending} 
                         onClick={handleUpdateJeweler}
+                        className="btn-primary"
                     >
                         {isPending ? 'En cours de mise à jour...' : 'Mettre à jour le profil'}
                     </Button>
@@ -286,73 +183,23 @@ const Jeweler = () => {
                     )}
                 </CardFooter>
             </Card>
-            <Card className="w-[600px]">
-                <CardHeader>
-                    <CardTitle>Créer un certificat</CardTitle>
-                    <CardDescription>
-                        Créer un certificat pour un bijou   
-                    </CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <div className="space-y-4">
-                        <div className="space-y-1">
-                            <Label htmlFor="material">Matériau principal du bijou</Label>
-                            <ComboboxMaterials setMaterial={setMaterial} />
-                        </div>
-                        <div className="space-y-1">
-                            <Label htmlFor="gemstone">Pierre précieuse principale du bijou</Label>
-                            <ComboboxGemsStones setGemstone={setGemstone} />
-                        </div>
-                        <div className="space-y-1">
-                            <Label htmlFor="weightInGrams">Poids du bijou en grammes</Label>
-                            <Input 
-                                type="number"
-                                id="weightInGrams"
-                                placeholder='Entrez le poids en grammes...' 
-                                value={weightInGrams} 
-                                onChange={(e) => setWeightInGrams(e.target.value)}
-                                min="0"
-                                step="1"
-                                className="w-full"
-                            />
-                        </div>
-                        <div className="space-y-1">
-                            <Label htmlFor="jewelerColor">Couleur principale du bijou</Label>
-                            <Input 
-                                type="string"
-                                id="jewelerColor"
-                                placeholder='Entrez la couleur principale du bijou...' 
-                                value={jewelerColor} 
-                                onChange={(e) => setJewelerColor(e.target.value)}
-                                className="w-full"
-                            />
-                        </div>
-                        <div className="space-y-1">
-                            <Label htmlFor="certificateLevel">Niveau du certificat</Label>
-                            <ComboboxCertificateLevel setCertificateLevel={setCertificateLevel} />
-                        </div>
+            <Card className="w-[600px]" >
+                <CardContent className="pt-6">
+                    <div className="flex gap-12 items-center justify-center">
+                        <Link href="/create-certificate">
+                            <Button className="btn-primary">Créer un certificat</Button>
+                        </Link>
+                        <Link href="/mycertificates">
+                            <Button className="btn-primary">Mes certificats</Button>
+                        </Link>
+                        <Link href="/manage">
+                            <Button className="btn-primary">Transférer un certificat</Button>
+                        </Link>
                     </div>
                 </CardContent>
-                <CardFooter className="flex flex-col gap-4">
-                    <Button 
-                        disabled={isPending || !available || 
-                            material === "" || 
-                            gemstone === "" || 
-                            weightInGrams === "" || 
-                            jewelerColor === "" || 
-                            certificateLevel === ""} 
-                        onClick={handleCreateCertificate}
-                    >
-                        {isPending ? 'En cours de création...' : 'Créer le certificat'}
-                    </Button>                    
-                </CardFooter>
             </Card>
-            <MyCertificateDisplay />
-            <Link href="/manage">
-                <Button>Gérer vos certificats</Button>
-            </Link>
         </div>
-    )
-}
+    );
+};
 
 export default Jeweler; 

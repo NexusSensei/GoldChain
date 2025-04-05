@@ -8,7 +8,6 @@ import CertificateDisplay from "@/components/shared/CertificateDisplay";
 import { ComboboxCertificateStatus } from "@/components/shared/CertificateStatusCombobox";
 import { useCertificate } from "@/hooks/useCertificate";
 import { useAccount, useWriteContract, useWaitForTransactionReceipt } from "wagmi";
-import { parseEther } from "viem";
 import { isAddress } from "viem";
 import { CONTRACT_ADDRESS, CONTRACT_ABI } from "@/constants";
 
@@ -167,7 +166,7 @@ const CertificateManager = ({ certificateNumber }) => {
               <Button 
                 onClick={handleUpdateStatus}
                 disabled={isUpdatingStatus || isConfirmingStatusUpdate || !certificateStatus}
-                className="bg-[#d4af37] hover:bg-[#b38f2f] text-white"
+                className="btn-primary"
               >
                 {isUpdatingStatus || isConfirmingStatusUpdate ? "Mise à jour..." : "Mettre à jour"}
               </Button>
@@ -198,7 +197,7 @@ const CertificateManager = ({ certificateNumber }) => {
               <Button 
                 onClick={handleTransfer}
                 disabled={isTransferring || isConfirmingTransfer || !isValidAddress}
-                className="bg-[#d4af37] hover:bg-[#b38f2f] text-white"
+                className="btn-primary"
               >
                 {isTransferring || isConfirmingTransfer ? "Transfert..." : "Transférer"}
               </Button>

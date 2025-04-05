@@ -131,7 +131,7 @@ const NFTDisplay = ({ searchId: initialSearchId }) => {
                             />
                             <Button 
                                 onClick={handleSearch}
-                                className="bg-[#d4af37] hover:bg-[#b38f2f] text-white"
+                                className="btn-primary"
                             >
                                 Rechercher
                             </Button>
