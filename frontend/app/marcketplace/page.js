@@ -12,8 +12,13 @@ const MarcketPlace = () => {
         <div>
         <div className="flex justify-center items-center">
             <h1 className="text-4xl font-bold text-center bg-gold-gradient text-transparent bg-clip-text drop-shadow-gold [text-shadow:var(--tw-shadow)]">
-                Marcket Place
+                Market Place
             </h1>
+        </div>
+        <div className="flex justify-center items-center">
+          <h2 className="text-2xl font-bold text-center bg-gold-gradient text-transparent bg-clip-text drop-shadow-gold [text-shadow:var(--tw-shadow)]">
+                Pas encore disponible
+            </h2>
         </div>
       </div>
       ) : (

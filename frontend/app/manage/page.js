@@ -1,14 +1,17 @@
 'use client'
 
 import { useState, useEffect } from "react";
-import CertificateManager from "@/components/shared/CertificateManager";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import CertificateManagerV2 from "@/components/shared/CertificateManagerV2";
+import Link from "next/link";
+import { useUserProfile } from "@/components/contexts/userContext";
 
 export default function ManagePage() {
   const [certificateNumber, setCertificateNumber] = useState("");
   const [searchId, setSearchId] = useState("");
+  const { userProfile } = useUserProfile();
 
   const handleSearch = () => {
     if (certificateNumber) {
@@ -38,7 +41,7 @@ export default function ManagePage() {
               />
               <Button 
                 onClick={handleSearch}
-                className="bg-[#d4af37] hover:bg-[#b38f2f] text-white"
+                className="btn-primary"
               >
                 Rechercher
               </Button>
@@ -47,9 +50,26 @@ export default function ManagePage() {
         </Card>
 
         {searchId && (
-          <CertificateManager certificateNumber={searchId} />
+          <CertificateManagerV2 certificateId={searchId} />
         )}
       </div>
+      <Card className="w-[600px] mx-auto mt-8" >
+          <CardContent className="pt-6">
+              <div className="flex gap-12 items-center justify-center">
+                {userProfile == "jeweler" && (
+                    <Link href="/create-certificate">
+                        <Button className="btn-primary">Créer un certificat</Button>
+                    </Link>
+                )}
+                <Link href="/profil">
+                    <Button className="btn-primary">Mon profil</Button>
+                </Link>
+                <Link href="/mycertificates">
+                    <Button className="btn-primary">Mes certificats</Button>
+                </Link>
+            </div>
+        </CardContent>
+      </Card>
     </div>
   );
 } 
