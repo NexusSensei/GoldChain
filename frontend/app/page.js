@@ -31,7 +31,7 @@ export default function Home() {
             <CardContent>
               <p>
                 Grâce à la blockchain, chaque certificat est unique, traçable et impossible à falsifier.
-                Protégez la valeur de vos bijoux avec une preuve d'authenticité numérique.
+                Protégez la valeur de vos bijoux avec une preuve d&#39;authenticité numérique.
               </p>
             </CardContent>
           </Card>
@@ -40,13 +40,13 @@ export default function Home() {
             <CardHeader>
               <CardTitle className="text-[#d4af37]">Traçabilité Totale</CardTitle>
               <CardDescription>
-                Suivez l'historique complet de vos bijoux
+                Suivez l&#39;historique complet de vos bijoux
               </CardDescription>
             </CardHeader>
             <CardContent>
               <p>
                 Chaque transaction, modification ou transfert est enregistré de manière permanente
-                sur la blockchain. Consultez l'historique complet de vos bijoux en quelques clics.
+                sur la blockchain. Consultez l&#39;historique complet de vos bijoux en quelques clics.
               </p>
             </CardContent>
           </Card>
@@ -85,7 +85,7 @@ export default function Home() {
             <div className="p-4">
               <div className="text-2xl font-bold text-[#d4af37] mb-2">3</div>
               <h3 className="font-semibold mb-2">Vérification</h3>
-              <p>Vérifiez l'authenticité de vos bijoux en temps réel</p>
+              <p>Vérifiez l&#39;authenticité de vos bijoux en temps réel</p>
             </div>
             <div className="p-4">
               <div className="text-2xl font-bold text-[#d4af37] mb-2">4</div>
