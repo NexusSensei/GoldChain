@@ -53,8 +53,6 @@ contract GoldChain is AccessControl, GoldChainERC721 {
     /* ::::::::::::::: VARIABLES  :::::::::::::::::: */
     IDataStorage private dataStorage;
     address public admin;
-    bool public constant FALSE = false;
-    bool public constant TRUE = true;
 
     /* ::::::::::::::: CONSTRUCTOR :::::::::::::::::: */
     constructor(IDataStorage _dataStorage) GoldChainERC721() {
@@ -80,7 +78,6 @@ contract GoldChain is AccessControl, GoldChainERC721 {
     /// @notice the jeweler is not registered
     error NotRegistered();
 
-
     /* ::::::::::::::: MODIFIERS :::::::::::::::::: */
 
     modifier onlyOwner(uint _certificateId) {
@@ -89,7 +86,6 @@ contract GoldChain is AccessControl, GoldChainERC721 {
         }
         _;
     }
-
     /* ::::::::::::::: FUNCTIONS :::::::::::::::::: */
 
     function createCustomer(
@@ -101,7 +97,7 @@ contract GoldChain is AccessControl, GoldChainERC721 {
             revert CustomerIsAlreadyRegistered();
         }
         _grantRole(GoldChainConstants.CUSTOMERS_ROLE, msg.sender);
-        dataStorage.addCustomer(msg.sender, _name, _email, _location, TRUE);
+        dataStorage.addCustomer(msg.sender, _name, _email, _location, true);
         emit customerCreated(msg.sender, block.timestamp);
         return true;
     }
@@ -115,7 +111,7 @@ contract GoldChain is AccessControl, GoldChainERC721 {
             revert JewelerIsAlreadyRegistered();
         }
         _grantRole(GoldChainConstants.JEWELERS_ROLE, msg.sender);
-        dataStorage.addJeweler(msg.sender, _name, _email, _location, FALSE, TRUE);
+        dataStorage.addJeweler(msg.sender, _name, _email, _location, false, true);
         emit jewelerCreated(msg.sender, block.timestamp);
         return true;
     }
@@ -129,7 +125,7 @@ contract GoldChain is AccessControl, GoldChainERC721 {
         string calldata _JewelerName,
         IDataStorage.CertificateStatus _status
     ) external onlyRole(GoldChainConstants.JEWELERS_ROLE) returns (bool) {
-        require(dataStorage.getOneJeweler(msg.sender).available == TRUE, NotRegistered());
+        require(dataStorage.getOneJeweler(msg.sender).available == true, NotRegistered());
         dataStorage.addCertificate(
             _materials, 
             _gemStones, 

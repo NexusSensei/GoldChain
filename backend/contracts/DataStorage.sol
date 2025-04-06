@@ -50,8 +50,8 @@ import "@openzeppelin/contracts/access/Ownable.sol";
     }
 
     struct Jeweler {
-        uint48 created_at;
-        uint48 updated_at;        
+        uint created_at;
+        uint updated_at;        
         string name;
         string email;
         string location;
@@ -61,8 +61,8 @@ import "@openzeppelin/contracts/access/Ownable.sol";
     }
 
     struct Customer {
-        uint48 created_at;
-        uint48 updated_at;
+        uint created_at;
+        uint updated_at;
         string name;
         string email;
         string location;
@@ -71,14 +71,15 @@ import "@openzeppelin/contracts/access/Ownable.sol";
     }
 
     struct Certificate {
-        uint48 creationDate;
-        uint48 updated_at;
+        uint creationDate;
+        uint updated_at;
         uint8 materials;
         uint8 gemStones;
         uint8 weightInGrams;
+        string mainColor; //enum ? 
         CertificateLevel level;
-        string mainColor;        
         string JewelerName;
+        //transfers
         CertificateStatus status;
     }    
 
@@ -88,17 +89,22 @@ import "@openzeppelin/contracts/access/Ownable.sol";
     uint private _jewelerCount;
     uint private _customerCount;
     uint private _certificateCount;
-    //address[] private _jewelerAddresses; //Pas utile pour l'instant
-    //address[] private _customerAddresses; //Pas utile pour l'instant
+    address[] private _jewelerAddresses;
+    address[] private _customerAddresses;
     mapping(address => Jeweler) public jewelers;
     mapping(address => Customer) public customers;
     mapping(uint => Certificate) public certificates;
-
+    address private goldChainAddress;
 
     constructor() Ownable(msg.sender) {
         
     }
 
+    /* ::::::::::::::: MODIFIERS  :::::::::::::::::: */
+    modifier onlyGoldChain() {
+        require(msg.sender == goldChainAddress, "Only GoldChain can call this function");
+        _;
+    }
 
     /* ::::::::::::::: FUNCTIONS  :::::::::::::::::: */
 
@@ -109,10 +115,10 @@ import "@openzeppelin/contracts/access/Ownable.sol";
         string calldata _location,
         bool _available,
         bool _visible
-    ) external  returns (bool) {
+    ) external onlyGoldChain() returns (bool) {
         jewelers[_jewelerAddress] = Jeweler(
-            uint48(block.timestamp),
-            uint48(block.timestamp),       
+            block.timestamp,
+            block.timestamp,       
             _name,
             _email,
             _location,
@@ -121,7 +127,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
             _visible
         );
         _jewelerCount += 1;
-        //_jewelerAddresses.push(_jewelerAddress);
+        _jewelerAddresses.push(_jewelerAddress);
         return true;
     }    
 
@@ -131,10 +137,10 @@ import "@openzeppelin/contracts/access/Ownable.sol";
         string calldata _email,
         string calldata _location,
         bool _visible
-    ) external returns (bool) {
+    ) external onlyGoldChain() returns (bool) {
         customers[_customerAddress] = Customer(
-            uint48(block.timestamp),
-            uint48(block.timestamp),  
+            block.timestamp,
+            block.timestamp,  
             _name,
             _email,
             _location,
@@ -142,7 +148,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
             new uint[](0)            
         );
         _customerCount += 1;
-        //_customerAddresses.push(_customerAddress);
+        _customerAddresses.push(_customerAddress);
         return true;
     }
 
@@ -154,15 +160,15 @@ import "@openzeppelin/contracts/access/Ownable.sol";
         CertificateLevel _level,
         string calldata _JewelerName,
         CertificateStatus _status
-    ) external returns (bool) {        
-        certificates[_certificateCount] = Certificate (
-            uint48(block.timestamp),
-            uint48(block.timestamp), 
+    ) external onlyGoldChain() returns (bool) {        
+        certificates[_certificateCount] = Certificate (            
+            block.timestamp,
+            block.timestamp, 
             _materials,
             _gemStones,
             _weightInGrams,
+            _mainColor,
             _level,
-            _mainColor,            
             _JewelerName,
             _status
         );
@@ -176,8 +182,8 @@ import "@openzeppelin/contracts/access/Ownable.sol";
         string calldata _email,
         string calldata _location,
         bool _visible
-    ) external returns (bool) {
-        customers[_customerAddress].updated_at = uint48(block.timestamp);
+    ) external onlyGoldChain() returns (bool) {
+        customers[_customerAddress].updated_at = block.timestamp;
         customers[_customerAddress].name = _name;
         customers[_customerAddress].email = _email;
         customers[_customerAddress].location = _location;
@@ -191,8 +197,8 @@ import "@openzeppelin/contracts/access/Ownable.sol";
         string calldata _email,
         string calldata _location,
         bool _visible
-    ) external returns (bool) {
-        jewelers[_jewelerAddress].updated_at = uint48(block.timestamp);
+    ) external onlyGoldChain() returns (bool) {
+        jewelers[_jewelerAddress].updated_at = block.timestamp;
         jewelers[_jewelerAddress].name = _name;
         jewelers[_jewelerAddress].email = _email;
         jewelers[_jewelerAddress].location = _location;
@@ -210,7 +216,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
         return true;
     }
 
-    function updateCertificateStatus(uint _certificateId, CertificateStatus _status) external returns (bool) {
+    function updateCertificateStatus(uint _certificateId, CertificateStatus _status) external onlyGoldChain() returns (bool) {
         certificates[_certificateId].status = _status;
         return true;
     }
@@ -237,5 +243,10 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 
     function getCertificateCount() external view returns(uint) {
         return _certificateCount;
+    }
+
+    function setGoldChainAddress(address _goldChainAddress) external onlyOwner returns (bool) {
+        goldChainAddress = _goldChainAddress;
+        return true;
     }
 }
