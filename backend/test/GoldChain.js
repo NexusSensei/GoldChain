@@ -28,10 +28,10 @@ describe("testing GoldChain", function () {
   async function deployGoldChainFixture() {
     const [admin, jeweler1, jeweler2, customer1, customer2, otherPerson] = await ethers.getSigners();
     const DataStorage = await ethers.getContractFactory("DataStorage");
-    const dataStorage = await DataStorage.deploy();
+    const dataStorage = await DataStorage.connect(admin).deploy();
     const GoldChain = await ethers.getContractFactory("GoldChain");
-    const goldChain = await GoldChain.deploy(dataStorage.target);
-    
+    const goldChain = await GoldChain.connect(admin).deploy(dataStorage.target);
+    await dataStorage.setGoldChainAddress(goldChain.target);
     return { goldChain, admin, jeweler1, jeweler2, customer1, customer2, otherPerson, dataStorage };
 }
 

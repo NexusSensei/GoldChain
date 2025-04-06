@@ -60,7 +60,7 @@ describe("NFTGoldChain", function () {
         it("Should encode text in base64 correctly", async function () {
             const textToEncode = "Ceci est un test de l'encodage base64";
             const bytes = ethers.toUtf8Bytes(textToEncode);
-            const encodedText = await nftGoldChain.Base64EncodeTest(bytes);
+            const encodedText = await nftGoldChain.Base64Encode(bytes);
             const expectedBase64 = Buffer.from(textToEncode).toString('base64');
             expect(encodedText).to.equal(expectedBase64);
         });
@@ -68,7 +68,7 @@ describe("NFTGoldChain", function () {
         it("Should not encode empty text", async function () {
             const textToEncode = "";
             const bytes = ethers.toUtf8Bytes(textToEncode);
-            const encodedText = await nftGoldChain.Base64EncodeTest(bytes);
+            const encodedText = await nftGoldChain.Base64Encode(bytes);
             const expectedBase64 = Buffer.from(textToEncode).toString('base64');
             expect(encodedText).to.equal(expectedBase64);
         });

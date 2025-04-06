@@ -39,6 +39,7 @@ const {
         "DataStorage"
         );
       dataStorage = await DataStorage.deploy();
+      await dataStorage.setGoldChainAddress(admin.address);
     });
   
 
@@ -149,15 +150,46 @@ const {
         await dataStorage.connect(admin).addJeweler(jeweler1.address, JEWELER1NAME, JEWELER1EMAIL, JEWELER1LOCATION, NOT_AVAILABLE, NOT_VISIBLE);
         await dataStorage.connect(admin).addCustomer(customer1.address, CUSTOMER1NAME, CUSTOMER1EMAIL, CUSTOMER1LOCATION, NOT_VISIBLE);
       });
-
-      // it("should not create a certificate if not registered", async function () {
-      //   await dataStorage.connect(jeweler1).addJeweler(jeweler1.address, JEWELER1NAME, JEWELER1EMAIL, JEWELER1LOCATION, NOT_AVAILABLE, NOT_VISIBLE);
-      //   await expect(dataStorage.connect(jeweler1).addCertificate(0, 0, 8, "alliance", 0, "jeweler1", 0)).to.be.revertedWithCustomError(
-      //     dataStorage,
-      //     "NotRegistered"
-      //   );
-      // });
     });
+
+    describe("Security", function () {
+      it("should not be possible to set the goldChainAddress if not owner", async function () {
+        await expect(dataStorage.connect(customer1).setGoldChainAddress(customer1.address))
+          .to.be.revertedWithCustomError(dataStorage, "OwnableUnauthorizedAccount");
+      });
+
+      it("should not be possible to add a jeweler if not owner", async function () {  
+        await expect(dataStorage.connect(jeweler1).addJeweler(jeweler1.address, JEWELER1NAME, JEWELER1EMAIL, JEWELER1LOCATION, NOT_AVAILABLE, NOT_VISIBLE)).to.be.revertedWith("Only GoldChain can call this function");
+      });
+
+      it("should not be possible to add a customer if not owner", async function () {
+        await expect(dataStorage.connect(customer1).addCustomer(customer1.address, CUSTOMER1NAME, CUSTOMER1EMAIL, CUSTOMER1LOCATION, NOT_VISIBLE)).to.be.revertedWith("Only GoldChain can call this function");
+      });
+
+      it("should not be possible to update a customer if not owner", async function () {
+        await dataStorage.connect(admin).addCustomer(customer1.address, CUSTOMER1NAME, CUSTOMER1EMAIL, CUSTOMER1LOCATION, NOT_VISIBLE);
+        await expect(dataStorage.connect(customer1).updateCustomer(customer1.address, CUSTOMER1NAME, CUSTOMER1EMAIL, CUSTOMER1LOCATION, NOT_VISIBLE)).to.be.revertedWith("Only GoldChain can call this function");
+      });
+
+      it("should not be possible to update a jeweler if not owner", async function () {
+        await dataStorage.connect(admin).addJeweler(jeweler1.address, JEWELER1NAME, JEWELER1EMAIL, JEWELER1LOCATION, NOT_AVAILABLE, NOT_VISIBLE);
+        await expect(dataStorage.connect(jeweler1).updateJeweler(jeweler1.address, JEWELER1NAME, JEWELER1EMAIL, JEWELER1LOCATION, NOT_VISIBLE)).to.be.revertedWith("Only GoldChain can call this function");
+      });
+
+      it("should not be possible to add a certificate if not owner", async function () {
+        await dataStorage.connect(admin).addJeweler(jeweler1.address, JEWELER1NAME, JEWELER1EMAIL, JEWELER1LOCATION, NOT_AVAILABLE, NOT_VISIBLE);
+        await expect(dataStorage.connect(jeweler1).addCertificate(0, 0, 8, "alliance", 0, "jeweler1", 0)).to.be.revertedWith("Only GoldChain can call this function");
+      });
+      
+      it("should not be possible to update a certificate if not owner", async function () {
+        await dataStorage.connect(admin).addJeweler(jeweler1.address, JEWELER1NAME, JEWELER1EMAIL, JEWELER1LOCATION, NOT_AVAILABLE, NOT_VISIBLE);
+        await dataStorage.connect(admin).addCustomer(customer1.address, CUSTOMER1NAME, CUSTOMER1EMAIL, CUSTOMER1LOCATION, NOT_VISIBLE);
+        await expect(dataStorage.connect(jeweler1).updateCertificateStatus(0, 0)).to.be.revertedWith("Only GoldChain can call this function");
+      });
+
+      
+    });
+
 
   });
   
