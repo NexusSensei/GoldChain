@@ -2,11 +2,9 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { useAccount } from "wagmi";
-import { ConnectButton } from "@rainbow-me/rainbowkit";
+import Link from "next/link";
 
 export default function Home() {
-  const { address } = useAccount();
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
@@ -100,22 +98,9 @@ export default function Home() {
             Commencez dès maintenant
           </h2>
           <div className="flex justify-center gap-4">
-            {address ? (
-              <Button className="bg-[#d4af37] hover:bg-[#b38f2e]">
-                Voir mes certificats
-              </Button>
-            ) : (
-              <ConnectButton.Custom>
-                {({ openConnectModal }) => (
-                  <Button 
-                    onClick={openConnectModal}
-                    className="btn-primary"
-                  >
-                    Connecter mon wallet
-                  </Button>
-                )}
-              </ConnectButton.Custom>
-            )}
+              <Link href="/profil">
+                  <Button className="btn-primary">Lancez vous !</Button>
+              </Link>
           </div>
         </div>
       </div>
