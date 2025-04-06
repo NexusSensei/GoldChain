@@ -21,9 +21,9 @@ export default function ManagePage() {
 
   return (
     <div className="container mx-auto py-8">
-      <h1 className="text-3xl font-bold mb-8 text-center">Gestion de certificat</h1>
-      
-      <div className="flex flex-col items-center gap-8">
+      <h1 className="text-4xl font-bold text-center bg-gold-gradient text-transparent bg-clip-text drop-shadow-gold [text-shadow:var(--tw-shadow)] mb-12">
+        Transférer un certificat</h1>      
+      <div className="flex flex-col items-center gap-8 ">
         <Card className="w-[600px]">
           <CardHeader>
             <CardTitle>Rechercher un certificat</CardTitle>
