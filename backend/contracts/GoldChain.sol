@@ -77,6 +77,9 @@ contract GoldChain is AccessControl, GoldChainERC721 {
     error TokenDoesNotExist();
     /// @notice the owner is not the owner of the certificate
     error NotOwner();
+    /// @notice the jeweler is not registered
+    error NotRegistered();
+
 
     /* ::::::::::::::: MODIFIERS :::::::::::::::::: */
 
@@ -86,6 +89,7 @@ contract GoldChain is AccessControl, GoldChainERC721 {
         }
         _;
     }
+
     /* ::::::::::::::: FUNCTIONS :::::::::::::::::: */
 
     function createCustomer(
@@ -125,6 +129,7 @@ contract GoldChain is AccessControl, GoldChainERC721 {
         string calldata _JewelerName,
         IDataStorage.CertificateStatus _status
     ) external onlyRole(GoldChainConstants.JEWELERS_ROLE) returns (bool) {
+        require(dataStorage.getOneJeweler(msg.sender).available == TRUE, NotRegistered());
         dataStorage.addCertificate(
             _materials, 
             _gemStones, 
@@ -168,21 +173,21 @@ contract GoldChain is AccessControl, GoldChainERC721 {
     /// @notice fetch a jeweler.
     /// @param _jewelerAddress, the id of the jeweler.
     /// @return Jeweler, a representation of the selected jeweler.
-    function getOneJeweler(address _jewelerAddress) public view returns(IDataStorage.Jeweler memory) {
+    function getOneJeweler(address _jewelerAddress) external view returns(IDataStorage.Jeweler memory) {
         return dataStorage.getOneJeweler(_jewelerAddress);
     }
 
     /// @notice fetch a jeweler.
     /// @param _customerAddress, the id of the jeweler.
     /// @return Customer, a representation of the selected jeweler.
-    function getOneCustomer(address _customerAddress) public view returns(IDataStorage.Customer memory) {
+    function getOneCustomer(address _customerAddress) external view returns(IDataStorage.Customer memory) {
         return dataStorage.getOneCustomer(_customerAddress);
     }
 
     /// @notice fetch a certificate.
     /// @param _certificateId, the id of the certificate.
     /// @return Certificate, a representation of the selected certificate.
-    function getOneCertificate(uint _certificateId) public view returns(IDataStorage.Certificate memory) {
+    function getOneCertificate(uint _certificateId) external view returns(IDataStorage.Certificate memory) {
         return dataStorage.getOneCertificate(_certificateId);
     }
 

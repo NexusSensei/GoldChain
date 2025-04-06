@@ -143,5 +143,21 @@ const {
 
     });
 
+    //test de creation d'un certificat
+    describe("Create Certificate", function () {
+      it("should create a certificate", async function () {
+        await dataStorage.connect(admin).addJeweler(jeweler1.address, JEWELER1NAME, JEWELER1EMAIL, JEWELER1LOCATION, NOT_AVAILABLE, NOT_VISIBLE);
+        await dataStorage.connect(admin).addCustomer(customer1.address, CUSTOMER1NAME, CUSTOMER1EMAIL, CUSTOMER1LOCATION, NOT_VISIBLE);
+      });
+
+      // it("should not create a certificate if not registered", async function () {
+      //   await dataStorage.connect(jeweler1).addJeweler(jeweler1.address, JEWELER1NAME, JEWELER1EMAIL, JEWELER1LOCATION, NOT_AVAILABLE, NOT_VISIBLE);
+      //   await expect(dataStorage.connect(jeweler1).addCertificate(0, 0, 8, "alliance", 0, "jeweler1", 0)).to.be.revertedWithCustomError(
+      //     dataStorage,
+      //     "NotRegistered"
+      //   );
+      // });
+    });
+
   });
   

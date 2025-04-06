@@ -20,7 +20,7 @@ describe("NFTGoldChain", function () {
 
     describe("Deployment", function () {
         it("Should set the correct name and symbol", async function () {
-            expect(await nftGoldChain.name()).to.equal("GoldChainERC721");
+            expect(await nftGoldChain.name()).to.equal("GoldChain");
             expect(await nftGoldChain.symbol()).to.equal("GC");
         });
     });
@@ -60,7 +60,7 @@ describe("NFTGoldChain", function () {
         it("Should encode text in base64 correctly", async function () {
             const textToEncode = "Ceci est un test de l'encodage base64";
             const bytes = ethers.toUtf8Bytes(textToEncode);
-            const encodedText = await nftGoldChain.Base64Encode(bytes);
+            const encodedText = await nftGoldChain.Base64EncodeTest(bytes);
             const expectedBase64 = Buffer.from(textToEncode).toString('base64');
             expect(encodedText).to.equal(expectedBase64);
         });
@@ -68,20 +68,11 @@ describe("NFTGoldChain", function () {
         it("Should not encode empty text", async function () {
             const textToEncode = "";
             const bytes = ethers.toUtf8Bytes(textToEncode);
-            const encodedText = await nftGoldChain.Base64Encode(bytes);
+            const encodedText = await nftGoldChain.Base64EncodeTest(bytes);
             const expectedBase64 = Buffer.from(textToEncode).toString('base64');
             expect(encodedText).to.equal(expectedBase64);
         });
 
-        // it("Should return valid base64 encoded URI", async function () {
-        //     await nftGoldChain.safeMint(addr1.address);
-        //     const tokenURI = await nftGoldChain.tokenURI(0);
-        //     // Vérifie que l'URI commence par data:application/json;base64,
-        //     expect(tokenURI).to.include("data:application/json;base64,");
-        //     // Vérifie que le reste est en base64 valide
-        //     const base64Part = tokenURI.split(",")[1];
-        //     expect(base64Part).to.match(/^[A-Za-z0-9+/=]+$/);
-        // });
     });
 
     describe("Transfer", function () {
@@ -99,6 +90,7 @@ describe("NFTGoldChain", function () {
                 nftGoldChain.connect(addr2).transferFrom(addr1.address, addr2.address, 0)
             ).to.be.revertedWithCustomError(nftGoldChain, "ERC721InsufficientApproval");
         });
+
     });
 
     describe("Balance", function () {
@@ -113,6 +105,7 @@ describe("NFTGoldChain", function () {
             expect(await nftGoldChain.balanceOf(addr1.address)).to.equal(0);
             expect(await nftGoldChain.balanceOf(addr2.address)).to.equal(1);
         });
+
     });
 
     describe("Interface Support", function () {

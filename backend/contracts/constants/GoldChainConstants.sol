@@ -22,8 +22,6 @@ library GoldChainConstants {
     string public constant SVG_DIAMOND_3 = '<line x1="330" y1="300" x2="470" y2="380" stroke="#8a6f30" stroke-width="3"/>';
     string public constant SVG_DIAMOND_4 = '<line x1="470" y1="300" x2="330" y2="380" stroke="#8a6f30" stroke-width="3"/>';
     string public constant SVG_BRAND_START = '<text x="50%" y="600" font-size="40" font-family="Arial, sans-serif" font-weight="bold" fill="#d4af37" text-anchor="middle">';
-    //string public constant SVG_BRAND_TEXT = 'GoldChain';
-    //string public constant SVG_BRAND_END = '</text>';
     string public constant SVG_FRAME = '<rect x="200" y="650" width="400" height="80" fill="white" stroke="#333" stroke-width="3" rx="10" ry="10"/>';
     string public constant SVG_NUMBER_START = '<text x="50%" y="700" font-size="30" font-family="Arial, sans-serif" fill="#333" text-anchor="middle">';
     string public constant SVG_END = '</svg>';

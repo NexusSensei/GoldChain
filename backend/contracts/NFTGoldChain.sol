@@ -70,7 +70,7 @@ contract GoldChainERC721 is ERC721, ERC721Enumerable {
 
 
     constructor()
-        ERC721("GoldChainERC721", "GC")
+        ERC721("GoldChain", "GC")
     {  
 
     }
@@ -100,7 +100,7 @@ contract GoldChainERC721 is ERC721, ERC721Enumerable {
         internal
         override(ERC721, ERC721Enumerable)
     {
-        super._increaseBalance(account, value);
+        revert("This function is not allowed");
     }
 
     function supportsInterface(bytes4 interfaceId)
@@ -114,7 +114,7 @@ contract GoldChainERC721 is ERC721, ERC721Enumerable {
     }
 
     // Fonction de test pour l'encodage base64
-    function Base64Encode(bytes memory data) public pure returns (string memory) {
+    function Base64EncodeTest(bytes memory data) public pure returns (string memory) {
         return Base64.encode(data);
     }
     
