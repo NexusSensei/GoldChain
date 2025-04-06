@@ -1,5 +1,6 @@
 //export const CONTRACT_ADDRESS="0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512" //Local
-export const CONTRACT_ADDRESS="0x3D13e4FB852f52D61c7F1b6aD8378813637d90Be" //test sepolia 1
+//export const CONTRACT_ADDRESS="0x3D13e4FB852f52D61c7F1b6aD8378813637d90Be" //test sepolia 1
+export const CONTRACT_ADDRESS="0x3748eEaA8FFd6978C8bD377a6e2318715C25de58" //sepolia 2
 export const CONTRACT_ABI=[
   {
     "inputs": [
@@ -175,6 +176,16 @@ export const CONTRACT_ABI=[
   {
     "inputs": [],
     "name": "JewelerNotExists",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NotOwner",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NotRegistered",
     "type": "error"
   },
   {
@@ -498,32 +509,6 @@ export const CONTRACT_ABI=[
         "internalType": "bytes32",
         "name": "",
         "type": "bytes32"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "FALSE",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "TRUE",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
       }
     ],
     "stateMutability": "view",
@@ -1324,8 +1309,19 @@ export const CONTRACT_ABI=[
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "updateCertificate",
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_certificateId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "enum IDataStorage.CertificateStatus",
+        "name": "_status",
+        "type": "uint8"
+      }
+    ],
+    "name": "updateCertificateStatus",
     "outputs": [
       {
         "internalType": "bool",
