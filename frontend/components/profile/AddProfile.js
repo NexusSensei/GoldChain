@@ -20,7 +20,7 @@ import {
   TabsTrigger,
 } from "@/components/ui/tabs";
 import { useState } from "react";
-
+import TransactionAlert from "@/components/ui/transaction-alert"
 import { CONTRACT_ADDRESS, CONTRACT_ABI } from "@/constants"
 
 import { error, useReadContract, useAccount, useWriteContract, useWaitForTransactionReceipt } from "wagmi";
@@ -42,12 +42,14 @@ const AddProfile = () => {
   const {getCustomer} = useCustomer();
   const {getJeweler} = useJeweler();
   const { data: hash, error, isPending, writeContract } = useWriteContract()
+  const [showTransactionAlert, setShowTransactionAlert] = useState(false);
   
   const handleAddClient = async() => {
     try {
       console.log(customerName, customerEmail, customerLocation);
       console.log(CONTRACT_ABI);
       console.log("début de la création du profil client");
+      setShowTransactionAlert(true);
       writeContract({
           address: CONTRACT_ADDRESS,
           abi: CONTRACT_ABI,
@@ -58,6 +60,8 @@ const AddProfile = () => {
       console.log("création du profil client terminée");
     } catch (error) {
       console.error(error)
+    } finally {
+      setShowTransactionAlert(false);
     }
   }
 
@@ -66,6 +70,7 @@ const AddProfile = () => {
       console.log(jewelerName, jewelerEmail, jewelerLocation);
       console.log(CONTRACT_ABI);
       console.log("début de la création du profil bijoutier");
+      setShowTransactionAlert(true);
       writeContract({
           address: CONTRACT_ADDRESS,
           abi: CONTRACT_ABI,
@@ -76,6 +81,8 @@ const AddProfile = () => {
       console.log("création du profil bijoutier terminée");
     } catch (error) {
       console.error(error)
+    } finally {
+      setShowTransactionAlert(false);
     }
   }
 
@@ -118,12 +125,14 @@ const AddProfile = () => {
             </CardContent>
             <CardFooter>
               <Button disabled={isPending} onClick={handleAddClient} className="btn-primary"> {isPending ? 'En cours de création...' : 'Créer profil client'}</Button>
-              {hash && <div>Transaction Hash: {hash}</div>}
-              {isConfirming && <div>Waiting for confirmation...</div>}
-              {isConfirmed && <div>Transaction confirmed. { getCustomer() && getUserProfile()  }</div>  }
-              {error && (
-                  <div>Error: {error.shortMessage || error.message}</div>
-              )}
+                {showTransactionAlert && (
+                    <TransactionAlert 
+                        hash={hash}
+                        isConfirming={isConfirming}
+                        isConfirmed={isConfirmed}
+                        error={writeError}
+                    />
+                )}
             </CardFooter>
           </Card>
         </TabsContent>
