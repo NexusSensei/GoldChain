@@ -20,7 +20,7 @@ import {
   TabsTrigger,
 } from "@/components/ui/tabs";
 import { useState } from "react";
-import TransactionAlert from "@/components/ui/transaction-alert"
+
 import { CONTRACT_ADDRESS, CONTRACT_ABI } from "@/constants"
 
 import { error, useReadContract, useAccount, useWriteContract, useWaitForTransactionReceipt } from "wagmi";
@@ -42,14 +42,12 @@ const AddProfile = () => {
   const {getCustomer} = useCustomer();
   const {getJeweler} = useJeweler();
   const { data: hash, error, isPending, writeContract } = useWriteContract()
-  const [showTransactionAlert, setShowTransactionAlert] = useState(false);
   
   const handleAddClient = async() => {
     try {
       console.log(customerName, customerEmail, customerLocation);
       console.log(CONTRACT_ABI);
       console.log("début de la création du profil client");
-      setShowTransactionAlert(true);
       writeContract({
           address: CONTRACT_ADDRESS,
           abi: CONTRACT_ABI,
@@ -60,8 +58,6 @@ const AddProfile = () => {
       console.log("création du profil client terminée");
     } catch (error) {
       console.error(error)
-    } finally {
-      setShowTransactionAlert(false);
     }
   }
 
@@ -70,7 +66,6 @@ const AddProfile = () => {
       console.log(jewelerName, jewelerEmail, jewelerLocation);
       console.log(CONTRACT_ABI);
       console.log("début de la création du profil bijoutier");
-      setShowTransactionAlert(true);
       writeContract({
           address: CONTRACT_ADDRESS,
           abi: CONTRACT_ABI,
@@ -81,8 +76,6 @@ const AddProfile = () => {
       console.log("création du profil bijoutier terminée");
     } catch (error) {
       console.error(error)
-    } finally {
-      setShowTransactionAlert(false);
     }
   }
 
@@ -122,19 +115,15 @@ const AddProfile = () => {
                 <Label htmlFor="CustomerAdress">Adresse</Label>
                 <Input type='string' placeholder='Votre adresse...' value={customerLocation} onChange={(e) => setCustomerLocation(e.target.value)}  />
               </div>
-              <div className="flex justify-center mt-6">
-                <Button disabled={isPending} onClick={handleAddClient} className="btn-primary"> {isPending ? 'En cours de création...' : 'Créer profil client'}</Button>
-              </div>
+              <Button disabled={isPending} onClick={handleAddClient} className="btn-primary"> {isPending ? 'En cours de création...' : 'Créer profil client'}</Button>
             </CardContent>
             <CardFooter>              
-                {showTransactionAlert && (
-                    <TransactionAlert 
-                        hash={hash}
-                        isConfirming={isConfirming}
-                        isConfirmed={isConfirmed}
-                        error={writeError}
-                    />
-                )}
+              {hash && <div>Transaction Hash: {hash}</div>}
+              {isConfirming && <div>Waiting for confirmation...</div>}
+              {isConfirmed && <div>Transaction confirmed. { getCustomer() && getUserProfile()  }</div>  }
+              {error && (
+                  <div>Error: {error.shortMessage || error.message}</div>
+              )}
             </CardFooter>
           </Card>
         </TabsContent>
@@ -148,8 +137,8 @@ const AddProfile = () => {
             </CardHeader>
             <CardContent className="space-y-2">
               <div className="space-y-1">
-                <Label>Nom & Prénom</Label>
-                <Input type='string' placeholder='Vos nom et prénom...' value={jewelerName} onChange={(e) => setJewelerName(e.target.value)}  />
+              <Label>Nom & Prénom</Label>
+              <Input type='string' placeholder='Vos nom et prénom...' value={jewelerName} onChange={(e) => setJewelerName(e.target.value)}  />
               </div>
               <div className="space-y-1">
                 <Label htmlFor="JewelerEmail">Email</Label>
@@ -159,19 +148,15 @@ const AddProfile = () => {
                 <Label htmlFor="JewelerAdresse">Adresse</Label>
                 <Input type='string' placeholder='Votre adresse...' value={jewelerLocation} onChange={(e) => setJewelerLocation(e.target.value)}  />
               </div>
-              <div className="flex justify-center">
-                <Button disabled={isPending} onClick={handleAddJeweler} className="btn-primary"> {isPending ? 'En cours de création...' : 'Créer profil bijoutier'}</Button>
-              </div>
+              <Button disabled={isPending} onClick={handleAddJeweler} className="btn-primary"> {isPending ? 'En cours de création...' : 'Créer profil bijoutier'}</Button>
             </CardContent>
-            <CardFooter>
-            {showTransactionAlert && (
-                    <TransactionAlert 
-                        hash={hash}
-                        isConfirming={isConfirming}
-                        isConfirmed={isConfirmed}
-                        error={writeError}
-                    />
-                )}
+            <CardFooter>              
+              {hash && <div>Transaction Hash: {hash}</div>}
+              {isConfirming && <div>Waiting for confirmation...</div>}
+              {isConfirmed && <div>Transaction confirmed. { getJeweler() && getUserProfile()  }</div>  }
+              {error && (
+                  <div>Error: {error.shortMessage || error.message}</div>
+              )}
             </CardFooter>
           </Card>
         </TabsContent>
