@@ -7,6 +7,9 @@ import { useAccount, useReadContract } from "wagmi";
 import { useEffect, useState } from "react";
 import { CONTRACT_ADDRESS, CONTRACT_ABI } from "@/constants";
 import { Button } from "@/components/ui/button";
+import { parseAbiItem } from 'viem'
+import { publicClient } from '@/utils/client'
+
 
 const MyCertificateDisplay = ({      
     title = "Vos certificats", 
@@ -18,6 +21,7 @@ const MyCertificateDisplay = ({
     const [currentIndex, setCurrentIndex] = useState(0);
     const [shouldFetch, setShouldFetch] = useState(false);
     const [statusMessage, setStatusMessage] = useState({ type: "", message: "" });
+    const [transferEvents, setTransferEvents] = useState([]);
     
     // Lecture du nombre de certificats
     const { 
@@ -85,6 +89,7 @@ const MyCertificateDisplay = ({
                     status: certificateData.status
                 }
             });
+            getTransferEvents(currentTokenId);
             setIsLoading(false);
         } else if (!shouldFetch) {
             setCurrentCertificate(null);
@@ -101,6 +106,49 @@ const MyCertificateDisplay = ({
         }
     }, [certificateCount]);
 
+    // Fonction pour récupérer les événements de transfert
+    const getTransferEvents = async (tokenId) => {
+        try {
+            const fromBlock = BigInt(Number(await publicClient.getBlockNumber()) - 2000);
+
+            const transferEvents = await publicClient.getLogs({
+                address: CONTRACT_ADDRESS,
+                event: parseAbiItem('event Transfer(address indexed from, address indexed to, uint256 indexed tokenId)'),
+                fromBlock: Number(fromBlock) >= 0 ? fromBlock : BigInt(0),
+                toBlock: 'latest',
+                args: {
+                    tokenId: tokenId
+                }
+            });
+
+            // Récupérer les timestamps des blocs
+            const formattedEvents = await Promise.all(transferEvents.map(async (event) => {
+                const block = await publicClient.getBlock({
+                    blockNumber: event.blockNumber
+                });
+                return {
+                    type: 'Transfer',
+                    from: event.args.from,
+                    to: event.args.to,
+                    timestamp: Number(block.timestamp)
+                };
+            }));
+
+            // Trier les événements par date (du plus récent au plus ancien)
+            formattedEvents.sort((a, b) => b.timestamp - a.timestamp);
+            setTransferEvents(formattedEvents);
+        } catch (error) {
+            console.error('Error fetching transfer events:', error);
+            setTransferEvents([]);
+        }
+    };
+
+    // Mettre à jour les événements quand le certificat change
+    useEffect(() => {
+        if (currentTokenId) {
+            getTransferEvents(currentTokenId);
+        }
+    }, [currentTokenId]);
 
     const handlePrevious = () => {
         if (currentIndex > 0) {
@@ -209,6 +257,7 @@ const MyCertificateDisplay = ({
                                         </div>
                                         <div className="border-b border-gray-200 pb-2">
                                             <div className="text-sm text-gray-600">Date de dernière modification</div>
+                                            {console.log("currentCertificate.details.updated_at", currentCertificate.details.updated_at)}
                                             <div className="font-medium">{formatEVMDate(currentCertificate.details.updated_at)}</div>
                                         </div>
                                     </div>
@@ -231,6 +280,38 @@ const MyCertificateDisplay = ({
                                 >
                                     Suivant
                                 </Button>
+                            </div>
+                            
+                            {/* Section des événements de transfert */}
+                            <div className="mt-8">
+                                <h4 className="text-lg font-semibold mb-4 text-[#d4af37]">Historique des transferts</h4>
+                                {transferEvents.length > 0 ? (
+                                    <div className="space-y-4">
+                                        {transferEvents.map((event, index) => (
+                                            console.log("event.timestamp", event.timestamp),
+                                            console.log("formatEVMDate(event.timestamp)", formatEVMDate(event.timestamp)),
+                                            <div key={index} className="border-2 border-[#d4af37] rounded-lg p-4 bg-white shadow-sm hover:shadow-md transition-shadow">
+                                                <div className="grid grid-cols-2 gap-4">
+                                                    <div>
+                                                        <div className="text-sm text-gray-600">Expéditeur</div>
+                                                        <div className="font-mono text-sm break-all">{event.from}</div>
+                                                    </div>
+                                                    <div>
+                                                        <div className="text-sm text-gray-600">Destinataire</div>
+                                                        <div className="font-mono text-sm break-all">{event.to}</div>
+                                                    </div>
+                                                </div>
+                                                <div className="mt-2 text-sm text-gray-500">
+                                                    {formatEVMDate(event.timestamp)}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <div className="text-center text-gray-500 py-4 italic">
+                                        Aucun historique de transfert disponible
+                                    </div>
+                                )}
                             </div>
                         </>
                     )}
