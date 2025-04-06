@@ -45,6 +45,9 @@ const NFTDisplay = ({ searchId: initialSearchId }) => {
     // Fonction pour décoder les métadonnées
     const decodeMetadata = (tokenURI) => {
         try {
+            console.log("=== Début décodage métadonnées ===");
+            console.log("TokenURI reçu:", tokenURI);
+            
             // Le tokenURI est au format "data:application/json;base64,..."
             const base64Data = tokenURI.split('base64,')[1];
             const jsonString = atob(base64Data);
@@ -101,12 +104,6 @@ const NFTDisplay = ({ searchId: initialSearchId }) => {
         if (nftId) {
             setSearchId(nftId);
         }
-    };
-
-    // Fonction pour formater l'adresse du propriétaire
-    const formatAddress = (address) => {
-        if (!address) return "";
-        return `${address.slice(0, 6)}...${address.slice(-4)}`;
     };
 
     return (
@@ -173,9 +170,7 @@ const NFTDisplay = ({ searchId: initialSearchId }) => {
                                                     <div className="text-sm text-gray-600">{attr.trait_type}</div>
                                                     <div className="font-medium">{attr.value}</div>
                                                 </div>
-                                            ))}
-                                            
-                                            
+                                            ))}                                            
                                         </div>
                                     </div>
 
