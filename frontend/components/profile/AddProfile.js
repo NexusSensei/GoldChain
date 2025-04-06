@@ -20,7 +20,7 @@ import {
   TabsTrigger,
 } from "@/components/ui/tabs";
 import { useState } from "react";
-
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { CONTRACT_ADDRESS, CONTRACT_ABI } from "@/constants"
 
 import { error, useReadContract, useAccount, useWriteContract, useWaitForTransactionReceipt } from "wagmi";
@@ -118,11 +118,35 @@ const AddProfile = () => {
               <Button disabled={isPending} onClick={handleAddClient} className="btn-primary"> {isPending ? 'En cours de création...' : 'Créer profil client'}</Button>
             </CardContent>
             <CardFooter>              
-              {hash && <div>Transaction Hash: {hash}</div>}
-              {isConfirming && <div>Waiting for confirmation...</div>}
-              {isConfirmed && <div>Transaction confirmed. { getCustomer() && getUserProfile()  }</div>  }
+            {hash && 
+                <Alert>
+                    <AlertDescription>
+                        Hash de la transaction: {hash}
+                    </AlertDescription>
+                </Alert>}
+              {isConfirming && (
+              <Alert>
+                    <AlertDescription>
+                        En attente de confirmation...
+                    </AlertDescription>
+                </Alert>
+              )}
+              {isConfirmed && (
+              <Alert className="bg-green-50">
+                  <AlertDescription className="text-green-800">
+                    Transaction confirmée avec succès  { getCustomer() && getUserProfile()  }
+                </AlertDescription>
+              </Alert>
+              )}              
               {error && (
                   <div>Error: {error.shortMessage || error.message}</div>
+              )}
+              {error && (
+                <Alert variant="destructive">
+                  <AlertDescription>
+                      Erreur: {error.shortMessage || error.message}
+                  </AlertDescription>
+              </Alert>
               )}
             </CardFooter>
           </Card>
@@ -151,11 +175,32 @@ const AddProfile = () => {
               <Button disabled={isPending} onClick={handleAddJeweler} className="btn-primary"> {isPending ? 'En cours de création...' : 'Créer profil bijoutier'}</Button>
             </CardContent>
             <CardFooter>              
-              {hash && <div>Transaction Hash: {hash}</div>}
-              {isConfirming && <div>Waiting for confirmation...</div>}
-              {isConfirmed && <div>Transaction confirmed. { getJeweler() && getUserProfile()  }</div>  }
+              {hash && 
+                <Alert>
+                    <AlertDescription>
+                        Hash de la transaction: {hash}
+                    </AlertDescription>
+                </Alert>}
+              {isConfirming && (
+              <Alert>
+                    <AlertDescription>
+                        En attente de confirmation...
+                    </AlertDescription>
+                </Alert>
+              )}
+              {isConfirmed && (
+              <Alert className="bg-green-50">
+                  <AlertDescription className="text-green-800">
+                    Transaction confirmée avec succès  { getJeweler() && getUserProfile()  }
+                </AlertDescription>
+              </Alert>
+              )}
               {error && (
-                  <div>Error: {error.shortMessage || error.message}</div>
+                <Alert variant="destructive">
+                  <AlertDescription>
+                      Erreur: {error.shortMessage || error.message}
+                  </AlertDescription>
+              </Alert>
               )}
             </CardFooter>
           </Card>
